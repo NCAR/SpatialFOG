@@ -49,6 +49,12 @@ protected:
   // _packetLen.
   ANPPPacket(std::vector<uint8_t> data);
 
+  /// @brief Return the CRC16-CCITT calculated for the given data bytes.
+  /// @param bytes pointer to the array of bytes to be tested
+  /// @param nbytes the number of bytes in the array
+  /// @return the CRC for the given data bytes
+  static uint16_t CalculateCRC(const uint8_t * bytes, int nbytes);
+
   /// @brief Return the LRC (ISO 1155 Longitudinal Redundancy Check) for the
   /// given byte array.
   /// @param bytes pointer to the array of bytes to be tested
