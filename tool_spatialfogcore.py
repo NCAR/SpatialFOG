@@ -8,11 +8,14 @@ env = Environment(tools=['default'] + tools)
 env.AppendUnique(CPPFLAGS = ['-std=c++11'])
 
 sources = Split('''
+    ANPPPacket.cpp
+    ANPPPacketFactory.cpp
     SpatialFOGCore.cpp
 ''')
 
 headers = Split('''
-    ArchiveANPP.h
+    ANPPPacket.h
+    ANPPPacketFactory.h
     SpatialFOGCore.h
 ''')
 
