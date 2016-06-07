@@ -15,7 +15,15 @@
 
 class RequestPacket: public ANPPPacket {
 public:
+  /// @brief Instantiate from raw ANPP packet data.
+  /// @param raw pointer to the raw packet data
+  /// @param length the number of bytes of data in raw
   RequestPacket(const void* raw, uint length);
+  
+  /// @brief Instantiate from a list of packet IDs to be requested.
+  /// @param idList a vector listing the packet IDs to be requested
+  RequestPacket(const std::vector<uint8_t> idList);
+  
   virtual ~RequestPacket();
   
   /// @brief Return the count of requested packet IDs.
@@ -35,7 +43,7 @@ private:
   /// a list of requested packet IDs.
   uint8_t _requestedPacketIds[255];
   
-  uint _nRequestedPacketIds;
+  uint8_t _nRequestedPacketIds;
 };
 
 #endif /* SRC_SPATIALFOG_ACKPACKET_H_ */
