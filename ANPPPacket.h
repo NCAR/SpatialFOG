@@ -74,7 +74,7 @@ public:
     endianTest.i = 0x01020304;
     return(endianTest.c[0] == 0x04);
   }
-
+  
 protected:
   friend class ANPPPacketFactory;
 
@@ -88,21 +88,10 @@ protected:
   ANPPPacket(const void * rawData, uint rawLength, uint8_t expectedId,
              uint8_t expectedDataLen = 0);
 
-  /// @brief Return true iff the given 5-byte array is a valid Advanced
-  /// Navigation Packet Protocol header.
-  ///
-  /// Advanced Navigation Packet Protocol headers are five bytes long,
-  /// and the first byte of the header is the LRC calculated for the remaining
-  /// four bytes. Any five bytes where the first byte is the LRC of the next
-  /// four bytes is a valid ANPP header.
-  /// @param bytes pointer to the array containing the bytes to be tested. This
-  /// array *must* be at least 5 bytes long.
-  /// @return true iff the first 5 bytes of the array form a valid packet
-  /// header.
-  ///
-  static bool IsValidHeader(const uint8_t * bytes) {
-    return(bytes[0] == CalculateLRC(bytes + 1, 4));
-  }
+  /// @brief Constructor which sets header values.
+  /// @param packetId the packet ID
+  /// @param packetDataLen the packet non-header data length
+  ANPPPacket(uint8_t packetId, uint8_t packetDataLen);
 
   static const uint HEADER_LEN = 5;
 
@@ -111,12 +100,18 @@ protected:
   /// This must point to at least _packetLen valid bytes of memory.
   virtual const uint8_t * _dataPtr() const = 0;
 
-private:
-  // Pack our _data struct without alignment padding, so that it matches the raw
-  // packet structure byte-for-byte.
-  #pragma pack(push, 1)
+  /// @brief Recalculate the LRC and CRC in the header to reflect all of the
+  /// other values in the packet.
+  ///
+  /// This should be called whenever changes are made to the packet ID, 
+  /// packet data length, or the packet data contents.
+  void _updateHeader();
 
-  // Contents of the header portion of the ANPP packet
+private:
+  // Contents of the header portion of the ANPP packet. We use #pragma pack(1)
+  // to force storage without any alignment padding, so that this matches the 
+  // ANPP header structure byte-for-byte.
+  #pragma pack(push, 1) // pack struct without alignment padding
   struct {
     // Header LRC
     uint8_t _headerLRC;
@@ -127,9 +122,7 @@ private:
     // Packet data CRC
     uint16_t _packetDataCRC;
   } _header;
-
-  // Resume default struct padding
-  #pragma pack(pop)
+  #pragma pack(pop)     // resume default struct padding
 };
 
 #endif /* SRC_SPATIALFOG_ANPPPACKET_H_ */

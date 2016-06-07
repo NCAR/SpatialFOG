@@ -81,6 +81,12 @@ ANPPPacket::ANPPPacket(const void * rawData, uint rawLength, uint8_t expectedId,
   }
 }
 
+ANPPPacket::ANPPPacket(uint8_t packetId, uint8_t packetDataLen) {
+  _header._packetId = packetId;
+  _header._packetDataLen = packetDataLen;
+  _updateHeader();
+}
+
 ANPPPacket::~ANPPPacket() {
 }
 
@@ -145,4 +151,15 @@ ANPPPacket::CalculateCRC(const void *data, int length)
     crc = (uint16_t)((crc << 8) ^ CRC16_TABLE[(crc >> 8) ^ bytes[i]]);
   }
   return crc;
+}
+
+void
+ANPPPacket::_updateHeader() {
+  // Do the CRC first, since the CRC itself goes into the calculation of 
+  // LRC below.
+  _header._packetDataCRC = CalculateCRC(_dataPtr(), packetDataLen());
+  
+  // Now calculate the header LRC from the last four bytes of the header.
+  _header._headerLRC = 
+      CalculateLRC(reinterpret_cast<const uint8_t*>(&_header) + 1, 4);
 }
