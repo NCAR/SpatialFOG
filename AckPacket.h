@@ -10,12 +10,15 @@
 
 #include <cinttypes>
 #include <string>
-//#include <boost/serialization/serialization.hpp>
 #include "ANPPPacket.h"
 
 class AckPacket: public ANPPPacket {
 public:
+  /// @brief Construct from raw packet data bytes
+  /// @param raw the raw packet bytes
+  /// @param length the number of bytes available in raw
   AckPacket(const void* raw, uint length);
+
   virtual ~AckPacket();
   
   /// @brief Return the ID of the acknowledged packet
