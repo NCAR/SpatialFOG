@@ -26,12 +26,6 @@ headers = Split('''
 lib = env.Library('spatialfogcore', sources)
 Default(lib)
 
-progEnv = env.Clone()
-progEnv.Append(LIBS=[lib])
-progEnv.Require(tools)
-fooProg = progEnv.Program('foo', ['foo.cpp'])
-Default(fooProg)
-
 env['DOXYFILE_DICT'].update({ "PROJECT_NAME" : "SpatialFOGCore library" })
 doxref = env.Apidocs(sources + headers)
 Default(doxref)
