@@ -30,14 +30,14 @@ public:
   /// @return the count of requested packet IDs.
   uint nRequestedPacketIds() const { return(_nRequestedPacketIds); }
   
-  /// @brief ANPP packet id for this packet type
-  static const uint8_t PACKET_ID = 1;
-  
 protected:
   /// @brief Return a pointer to the non-header data portion of the packet.
   /// @return a pointer to the non-header data portion of the packet.
   virtual const uint8_t * _dataPtr() const { return(_requestedPacketIds); }
 
+  /// @brief ANPP packet id for this packet type
+  static const uint8_t _PACKET_ID = 1;
+  
 private:
   /// @brief Contents of the data portion of the ANPP packet, which is just
   /// a list of requested packet IDs.

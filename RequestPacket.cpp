@@ -13,17 +13,17 @@
 LOGGING("RequestPacket")
 
 RequestPacket::RequestPacket(const void* raw, uint length) :
-  ANPPPacket(raw, length, PACKET_ID),
+  ANPPPacket(raw, length, _PACKET_ID),
   _nRequestedPacketIds(packetDataLen()) {
   // Copy the raw bytes after the header into our list of requested packet IDs.
   // The packet length from the header tells us how many requested IDs there
   // are.
-  memcpy(_requestedPacketIds, reinterpret_cast<const uint8_t *>(raw) + HEADER_LEN, 
+  memcpy(_requestedPacketIds, reinterpret_cast<const uint8_t *>(raw) + _HEADER_LEN, 
          _nRequestedPacketIds);
 }
 
 RequestPacket::RequestPacket(std::vector<uint8_t> idList) :
-  ANPPPacket(PACKET_ID, idList.size()) {
+  ANPPPacket(_PACKET_ID, idList.size()) {
   // It's a problem if they request more that 255 packet ids...
   assert(idList.size() <= 255);
   

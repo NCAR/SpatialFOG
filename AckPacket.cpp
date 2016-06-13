@@ -24,12 +24,12 @@ const std::string AckPacket::AckResultStrings[] = {
 };
 
 AckPacket::AckPacket(const void* raw, uint length) :
-  ANPPPacket(raw, length, PACKET_ID, PACKET_DATA_LEN) {
+  ANPPPacket(raw, length, _PACKET_ID, _PACKET_DATA_LEN) {
   // Make sure our _data struct is the correct size and copy the raw 
-  assert(sizeof(_data) == PACKET_DATA_LEN);
+  assert(sizeof(_data) == _PACKET_DATA_LEN);
   // Copy the raw bytes after the header into our data struct
-  memcpy(&_data, reinterpret_cast<const uint8_t *>(raw) + HEADER_LEN, 
-         PACKET_DATA_LEN);
+  memcpy(&_data, reinterpret_cast<const uint8_t *>(raw) + _HEADER_LEN, 
+         _PACKET_DATA_LEN);
 }
 
 AckPacket::~AckPacket() {

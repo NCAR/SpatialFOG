@@ -93,7 +93,7 @@ protected:
   /// @param packetDataLen the packet non-header data length
   ANPPPacket(uint8_t packetId, uint8_t packetDataLen);
 
-  static const uint HEADER_LEN = 5;
+  static const uint _HEADER_LEN = 5;
 
   /// @brief Return a pointer to the non-header data portion of the packet.
   ///

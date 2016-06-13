@@ -22,18 +22,18 @@ ANPPPacket::ANPPPacket(const void * rawData, uint rawLength, uint8_t expectedId,
   // ANPP packets contain little-endian data, and much of the implementation
   // here assumes the machine we're working on is also little-endian.
   assert(MachineIsLittleEndian());
-  assert(sizeof(_header) == HEADER_LEN);
+  assert(sizeof(_header) == _HEADER_LEN);
 
   // The ANPP header is 5 bytes long. If we have less than that, there's
   // a problem.
   if (rawLength < 5) {
     ss << "Raw packet size (" << rawLength << 
-        ") is less than header length (" << HEADER_LEN << ")";
+        ") is less than header length (" << _HEADER_LEN << ")";
     throw BadPacketData(ss.str());
   }
   
   // Copy the 5-byte header into our equivalent struct
-  memcpy(&_header, rawData, HEADER_LEN);
+  memcpy(&_header, rawData, _HEADER_LEN);
 
   // Byte 0 of the header contains the LRC for the next four bytes.
   // Read it and confirm that it's correct.
@@ -47,9 +47,9 @@ ANPPPacket::ANPPPacket(const void * rawData, uint rawLength, uint8_t expectedId,
 
   // Make sure the raw packet contains enough bytes for the header + the data
   // length.
-  if (rawLength < uint(packetDataLen() + HEADER_LEN)) {
+  if (rawLength < uint(packetDataLen() + _HEADER_LEN)) {
     ss << "Raw packet size (" << rawLength << 
-        ") is less than the required size (" << packetDataLen() + HEADER_LEN <<
+        ") is less than the required size (" << packetDataLen() + _HEADER_LEN <<
         ")";
     throw BadPacketData(ss.str());
   }
@@ -57,7 +57,7 @@ ANPPPacket::ANPPPacket(const void * rawData, uint rawLength, uint8_t expectedId,
   // CRC of the data portion of the packet is in bytes 3-4. Calculate actual 
   // data CRC and make sure it matches.
   uint16_t calculatedCRC = CalculateCRC(
-      reinterpret_cast<const uint8_t*>(rawData) + HEADER_LEN,
+      reinterpret_cast<const uint8_t*>(rawData) + _HEADER_LEN,
       packetDataLen());
   if (calculatedCRC != packetDataCRC()) {
     ss << "Header CRC 0x" << std::hex << packetDataCRC() << 
