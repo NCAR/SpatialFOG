@@ -5,6 +5,7 @@
  *      Author: burghart
  */
 
+#include <cassert>
 #include <cstring>
 #include <sstream>
 #include <logx/Logging.h>
