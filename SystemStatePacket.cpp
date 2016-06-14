@@ -7,7 +7,10 @@
 
 #include <cassert>
 #include <cstring>
+#include <logx/Logging.h>
 #include "SystemStatePacket.h"
+
+LOGGING("SystemStatePacket")
 
 SystemStatePacket::SystemStatePacket(const void* raw, uint length) :
   ANPPPacket(raw, length, _PACKET_ID, _PACKET_DATA_LEN) {
