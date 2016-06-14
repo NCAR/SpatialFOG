@@ -14,6 +14,7 @@ sources = Split('''
     RequestPacket.cpp
     SpatialFOGCore.cpp
     SystemStatePacket.cpp
+    UnixTimePacket.cpp
 ''')
 
 headers = Split('''
@@ -23,6 +24,7 @@ headers = Split('''
     RequestPacket.h
     SpatialFOGCore.h
     SystemStatePacket.h
+    UnixTimePacket.h
 ''')
 
 lib = env.Library('spatialfogcore', sources)
