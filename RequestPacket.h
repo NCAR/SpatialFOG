@@ -5,8 +5,8 @@
  *      Author: burghart
  */
 
-#ifndef SRC_SPATIALFOG_ACKPACKET_H_
-#define SRC_SPATIALFOG_ACKPACKET_H_
+#ifndef SRC_SPATIALFOG_REQUESTPACKET_H_
+#define SRC_SPATIALFOG_REQUESTPACKET_H_
 
 #include <cinttypes>
 #include <string>
@@ -38,11 +38,11 @@ protected:
   static const uint8_t _PACKET_ID = 1;
   
 private:
-  /// @brief Contents of the data portion of the ANPP packet, which is just
-  /// a list of requested packet IDs.
+  /// @brief Contents of the data portion of the ANPP Request Packet, which is
+  /// just a list of requested packet IDs.
   uint8_t _requestedPacketIds[255];
   
   uint8_t _nRequestedPacketIds;
 };
 
-#endif /* SRC_SPATIALFOG_ACKPACKET_H_ */
+#endif /* SRC_SPATIALFOG_REQUESTPACKET_H_ */
