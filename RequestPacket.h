@@ -10,7 +10,6 @@
 
 #include <cinttypes>
 #include <string>
-//#include <boost/serialization/serialization.hpp>
 #include "ANPPPacket.h"
 
 class RequestPacket: public ANPPPacket {

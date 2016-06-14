@@ -37,11 +37,7 @@ private:
   // packet structure byte-for-byte.
   #pragma pack(push, 1)
 
-  /// @brief Contents of the data portion of the ANPP packet
-  ///
-  /// This member is explicitly stored in a packed form, so that it remains
-  /// byte-for-byte compatible with raw packets sent to/from the SpatialFOG
-  /// (at least on a little-endian system).
+  /// @brief Contents of the data portion of the ANPP System State Packet
   struct {
     uint16_t _systemStatus;     // 16 bit mask
     uint16_t _filterStatus;     // 16 bit mask

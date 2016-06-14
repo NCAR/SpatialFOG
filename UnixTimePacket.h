@@ -31,11 +31,7 @@ private:
   // packet structure byte-for-byte.
   #pragma pack(push, 1)
 
-  /// @brief Contents of the data portion of the ANPP packet
-  ///
-  /// This member is explicitly stored in a packed form, so that it remains
-  /// byte-for-byte compatible with raw packets sent to/from the SpatialFOG
-  /// (at least on a little-endian system).
+  /// @brief Contents of the data portion of the ANPP Unix Time Packet
   struct {
     uint32_t _unixTimeSeconds;
     uint32_t _microseconds;
