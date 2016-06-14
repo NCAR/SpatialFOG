@@ -39,8 +39,8 @@ private:
 
   /// @brief Contents of the data portion of the ANPP System State Packet
   struct {
-    uint16_t _systemStatus;     // 16 bit mask
-    uint16_t _filterStatus;     // 16 bit mask
+    uint16_t _systemStatus;     // 16 system status bits
+    uint16_t _filterStatus;     // 16 filter status bits
     uint32_t _unixTimeSeconds;
     uint32_t _microseconds;
     double _latitude;           // rad
