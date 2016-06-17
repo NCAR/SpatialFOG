@@ -8,9 +8,9 @@
 #ifndef SRC_SPATIALFOG_ANPPPACKETFACTORY_H_
 #define SRC_SPATIALFOG_ANPPPACKETFACTORY_H_
 
+#include <exception>
 #include <vector>
 #include "ANPPPacket.h"
-//#include "AckPacket.h"
 
 class ANPPPacketFactory {
 public:
@@ -25,7 +25,17 @@ public:
     return (*_instancePtr);
   }
   
-  ANPPPacket * createANPPPacket(const std::vector<uint8_t> & bytes);
+  /// @brief Return a new ANPPPacket instance created from the given raw packet
+  /// bytes.
+  ///
+  /// The caller is responsible for deleting the returned instance.
+  /// @param raw pointer to raw packet bytes from which the ANPPPacket object
+  /// is to be constructed.
+  /// @param len the number of bytes available in raw
+  /// @return a new ANPPPacket instance created from the given raw packet bytes.
+  /// @throws ANPPPacket::BadPacketData
+  ANPPPacket * constructANPPPacket(const uint8_t * raw, uint len) const;
+
 private:
   /// @brief Pointer to the singleton instance
   static ANPPPacketFactory * _instancePtr;
