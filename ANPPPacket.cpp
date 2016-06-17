@@ -22,6 +22,8 @@ ANPPPacket::ANPPPacket(const void * rawData, uint rawLength, uint8_t expectedId,
   // ANPP packets contain little-endian data, and much of the implementation
   // here assumes the machine we're working on is also little-endian.
   assert(MachineIsLittleEndian());
+
+  // Verify that our header struct is packed without added padding bytes
   assert(sizeof(_header) == _HEADER_LEN);
 
   // The ANPP header is 5 bytes long. If we have less than that, there's
