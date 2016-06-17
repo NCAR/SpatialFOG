@@ -75,6 +75,17 @@ public:
     return(endianTest.c[0] == 0x04);
   }
   
+  /// @brief Return true iff the first 5 bytes pointed to by bytes comprise a
+  /// valid ANPP packet header.
+  /// @param bytes a pointer to at least 5 bytes of readable memory
+  /// @return true iff the first 5 bytes pointed to by bytes comprise a valid
+  /// ANPP packet header.
+  static bool IsValidHeader(const uint8_t * bytes) {
+    // In a valid 5-byte ANPP packet header, the first byte contains the LRC
+    // for the following four bytes.
+    return(bytes[0] == CalculateLRC(bytes + 1, 4));
+  }
+
 protected:
   friend class ANPPPacketFactory;
 
@@ -85,6 +96,7 @@ protected:
   /// @param expectedId the expected packet ID
   /// @param expectedDataLen the expected length of the non-header data in
   /// the packet (or zero if the expected length is unknown)
+  /// @throws BadPacketData
   ANPPPacket(const void * rawData, uint rawLength, uint8_t expectedId,
              uint8_t expectedDataLen = 0);
 
