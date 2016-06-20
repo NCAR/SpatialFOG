@@ -113,6 +113,10 @@ protected:
 
   /// @brief This constructor unpacks the ANPP header and performs some basic 
   /// packet validation.
+  ///
+  /// The constructor also sets the time of validity of the packet to the
+  /// latest time of validity obtained from a System State or Unix Time packet.
+  ///
   /// @param rawData pointer to raw ANPP packet data
   /// @param rawLength number of bytes available in rawData
   /// @param expectedId the expected packet ID
@@ -127,6 +131,7 @@ protected:
   /// @param packetDataLen the packet non-header data length
   ANPPPacket(uint8_t packetId, uint8_t packetDataLen);
 
+  /// @brief The fixed length of the ANPP packet header: 5 bytes
   static const uint _HEADER_LEN = 5;
 
   /// @brief Return a pointer to the non-header data portion of the packet.
