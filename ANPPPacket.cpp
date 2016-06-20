@@ -15,6 +15,12 @@
 
 LOGGING("ANPPPacket");
 
+// Latest time of validity received in a System State or Unix Time packet.
+uint32_t ANPPPacket::_LatestTimeOfValiditySeconds = 0;
+uint32_t ANPPPacket::_LatestTimeOfValidityMicroseconds = 0;
+
+
+
 ANPPPacket::ANPPPacket(const void * rawData, uint rawLength, uint8_t expectedId,
                        uint8_t expectedDataLen) {
   std::stringstream ss;
@@ -81,6 +87,11 @@ ANPPPacket::ANPPPacket(const void * rawData, uint rawLength, uint8_t expectedId,
         " when expecting " << uint(expectedDataLen);
     throw BadPacketData(ss.str());
   }
+  
+  // Set the time of validity for the packet to the latest time we received.
+  _timeOfValiditySeconds = _LatestTimeOfValiditySeconds;
+  _timeOfValidityMicroseconds = _LatestTimeOfValidityMicroseconds;
+  
 }
 
 ANPPPacket::ANPPPacket(uint8_t packetId, uint8_t packetDataLen) {

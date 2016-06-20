@@ -18,6 +18,15 @@ SystemStatePacket::SystemStatePacket(const void* raw, uint length) :
   // Copy the raw bytes after the header into our data struct
   memcpy(&_data, reinterpret_cast<const uint8_t *>(raw) + _HEADER_LEN, 
          _PACKET_DATA_LEN);
+
+  // Time of validity supplied in this packet applies to succeeding packets
+  // as well. Save it in a static common location.
+  _SetLatestTimeOfValidity(_data._unixTimeSeconds, _data._microseconds);
+
+  // Reset our own time of validity. We must overwrite the time set by
+  // our superclass constructor, which used the latest *previous* "time of
+  // validity" values.
+  _setTimeOfValidity(_data._unixTimeSeconds, _data._microseconds);
 }
 
 SystemStatePacket::~SystemStatePacket() {

@@ -40,6 +40,28 @@ public:
   /// @brief Return the CRC for the data (non-header) portion of the packet.
   /// @return the CRC for the data (non-header) portion of the packet.
   uint16_t packetDataCRC() { return(_header._packetDataCRC); }
+  
+  /// @brief Return the time of validity for the packet, in whole seconds since
+  /// 1970-01-01 00:00:00 UTC.
+  /// @return the time of validity for the packet, in whole seconds since
+  /// 1970-01-01 00:00:00 UTC.
+  uint32_t timeOfValiditySeconds() { return(_timeOfValiditySeconds); }
+  
+  /// @brief Return the subsecond portion of time of validity for the packet,
+  /// in microseconds.
+  /// @return the subsecond portion of time of validity for the packet,
+  /// in microseconds.
+  uint32_t timeOfValidityMicroseconds() { return(_timeOfValidityMicroseconds); }
+  
+  /// @brief Return the value of timeOfValiditySeconds() + 
+  /// 1.0e-6 * timeOfValidityMicroseconds(), expressed as a double-precision
+  /// float.
+  /// @return Return the value of timeOfValiditySeconds() + 
+  /// 1.0e-6 * timeOfValidityMicroseconds(), expressed as a double-precision
+  /// float.
+  double timeOfValidity() { 
+    return(timeOfValiditySeconds() + 1.0e-6 * timeOfValidityMicroseconds());
+  }
 
   /// @brief Exception thrown if packet data passed to the constructor is bad.
   class BadPacketData : public std::exception {
@@ -119,6 +141,26 @@ protected:
   /// packet data length, or the packet data contents.
   void _updateHeader();
 
+  /// @brief Set the object's time of validity, in seconds and microseconds
+  /// since 1970-01-01 00:00:00 UTC.
+  void _setTimeOfValidity(uint32_t unixSeconds,
+                          uint32_t microseconds) {
+    _timeOfValiditySeconds = unixSeconds;
+    _timeOfValidityMicroseconds = microseconds;
+  }
+
+  /// @brief Store the latest time of validity received from the SpatialFOG, in
+  /// Unix time format. This time is sent in both System State and Unix Time 
+  /// packets, and applies to all packets delivered in the same packet sequence.
+  /// (See the Spatial FOG Reference Manual, section 13.6-Packet Timing.)
+  static uint32_t _LatestTimeOfValiditySeconds;
+  static uint32_t _LatestTimeOfValidityMicroseconds;
+  static void _SetLatestTimeOfValidity(uint32_t unixSeconds,
+                                       uint32_t microseconds) {
+    _LatestTimeOfValiditySeconds = unixSeconds;
+    _LatestTimeOfValidityMicroseconds = microseconds;
+  }
+
 private:
   // Contents of the header portion of the ANPP packet. We use #pragma pack(1)
   // to force storage without any alignment padding, so that this matches the 
@@ -135,6 +177,11 @@ private:
     uint16_t _packetDataCRC;
   } _header;
   #pragma pack(pop)     // resume default struct padding
+  
+  // Time of validity for the packet. This time is not sent with every packet,
+  // but is taken from the last System State or Unix Time packet delivered.
+  uint32_t _timeOfValiditySeconds;
+  uint32_t _timeOfValidityMicroseconds;
 };
 
 #endif /* SRC_SPATIALFOG_ANPPPACKET_H_ */
