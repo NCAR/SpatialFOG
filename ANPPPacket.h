@@ -134,11 +134,6 @@ protected:
   /// @brief The fixed length of the ANPP packet header: 5 bytes
   static const uint _HEADER_LEN = 5;
 
-  /// @brief Return a pointer to the non-header data portion of the packet.
-  ///
-  /// This must point to at least _packetLen valid bytes of memory.
-  virtual const uint8_t * _dataPtr() const = 0;
-
   /// @brief Recalculate the LRC and CRC in the header to reflect all of the
   /// other values in the packet.
   ///
@@ -165,6 +160,10 @@ protected:
     _LatestTimeOfValiditySeconds = unixSeconds;
     _LatestTimeOfValidityMicroseconds = microseconds;
   }
+
+  // Pointer to memory holding the non-header data contents of the packet.
+  // This should be set in the subclass constructors.
+  uint8_t * _dataPtr;
 
 private:
   // Contents of the header portion of the ANPP packet. We use #pragma pack(1)

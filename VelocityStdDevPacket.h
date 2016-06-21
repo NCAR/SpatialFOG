@@ -19,12 +19,6 @@ public:
 
   virtual ~VelocityStdDevPacket();
 protected:
-  /// @brief Return a pointer to the non-header data portion of the packet.
-  /// @return a pointer to the non-header data portion of the packet.
-  virtual const uint8_t * _dataPtr() const {
-    return(reinterpret_cast<const uint8_t*>(&_data));
-  }
-
   /// @brief ANPP packet id for this packet type
   static const uint8_t _PACKET_ID = 25;
   

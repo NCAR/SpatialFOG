@@ -22,7 +22,11 @@ uint32_t ANPPPacket::_LatestTimeOfValidityMicroseconds = 0;
 
 
 ANPPPacket::ANPPPacket(const void * rawData, uint rawLength, uint8_t expectedId,
-                       uint8_t expectedDataLen) {
+                       uint8_t expectedDataLen) : 
+  _dataPtr(0),
+  // Use latest time of validity we've received
+  _timeOfValiditySeconds(_LatestTimeOfValiditySeconds),
+  _timeOfValidityMicroseconds(_LatestTimeOfValidityMicroseconds) {
   std::stringstream ss;
 
   // ANPP packets contain little-endian data, and much of the implementation
@@ -86,18 +90,16 @@ ANPPPacket::ANPPPacket(const void * rawData, uint rawLength, uint8_t expectedId,
     ss << "Got packet data length " << packetDataLen() << 
         " when expecting " << uint(expectedDataLen);
     throw BadPacketData(ss.str());
-  }
-  
-  // Set the time of validity for the packet to the latest time we received.
-  _timeOfValiditySeconds = _LatestTimeOfValiditySeconds;
-  _timeOfValidityMicroseconds = _LatestTimeOfValidityMicroseconds;
-  
+  }  
 }
 
-ANPPPacket::ANPPPacket(uint8_t packetId, uint8_t packetDataLen) {
+ANPPPacket::ANPPPacket(uint8_t packetId, uint8_t packetDataLen) :
+  _dataPtr(0),
+  // Use latest time of validity we've received
+  _timeOfValiditySeconds(_LatestTimeOfValiditySeconds),
+  _timeOfValidityMicroseconds(_LatestTimeOfValidityMicroseconds) {
   _header._packetId = packetId;
   _header._packetDataLen = packetDataLen;
-  _updateHeader();
 }
 
 ANPPPacket::~ANPPPacket() {
@@ -170,7 +172,7 @@ void
 ANPPPacket::_updateHeader() {
   // Do the CRC first, since the CRC itself goes into the calculation of 
   // LRC below.
-  _header._packetDataCRC = CalculateCRC(_dataPtr(), packetDataLen());
+  _header._packetDataCRC = _dataPtr ? CalculateCRC(_dataPtr, packetDataLen()) : 0;
   
   // Now calculate the header LRC from the last four bytes of the header.
   _header._headerLRC = 
