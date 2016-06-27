@@ -37,7 +37,9 @@ SpatialFOGCore::SpatialFOGCore(float orientationHeadingDeg,
                                float antennaOffsetY,
                                float antennaOffsetZ) :
   _configurationComplete(false),
-  _expectedAcks() {
+  _expectedAcks(),
+  _currentConfig(),
+  _desiredConfig() {
 }
 
 SpatialFOGCore::~SpatialFOGCore() {

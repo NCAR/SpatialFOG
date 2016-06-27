@@ -93,6 +93,17 @@ private:
   /// @brief Vector of sent configuration packet IDs for which acknowledgments
   /// are expected.
   std::vector<uint8_t> _expectedAcks;
+
+  /// @struct to hold desired and actual configuration settings for the unit
+  typedef struct {
+    uint16_t _packetTimerUnitUsecs;     // unit packet period, us
+    uint32_t _packetPeriod[256];        // packet period by ID, in units of _packetTimerUnitUsecs
+    float _antennaOffset[3];            // antenna offset (x,y,z), m
+    float _alignmentDCM[3][3];          // orientation alignment directed cosine matrix
+  } Config;
+
+  Config _currentConfig;
+  Config _desiredConfig;
 };
 
 #endif /* SRC_SPATIALFOG_SPATIALFOGCORE_H_ */
