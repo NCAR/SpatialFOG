@@ -1,7 +1,7 @@
 #
 # Rules to build libspatialfogcore.a and export it as a SCons tool
 #
-tools = ['doxygen', 'logx', 'boost_serialization']
+tools = ['doxygen', 'logx']
 thisDir = Dir('.').abspath
 
 env = Environment(tools=['default'] + tools)
