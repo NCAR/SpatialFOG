@@ -161,14 +161,14 @@ protected:
     _LatestTimeOfValidityMicroseconds = microseconds;
   }
 
-  // Pointer to memory holding the non-header data contents of the packet.
-  // This should be set in the subclass constructors.
+  /// @brief Pointer to memory holding the non-header data contents of the
+  /// packet. This should be set in the subclass constructors.
   uint8_t * _dataPtr;
 
 private:
-  // Contents of the header portion of the ANPP packet. We use #pragma pack(1)
-  // to force storage without any alignment padding, so that this matches the 
-  // ANPP header structure byte-for-byte.
+  /// @brief Contents of the header portion of the ANPP packet. We use
+  /// #pragma pack(1) to force storage without any alignment padding, so that
+  /// this matches the ANPP header structure byte-for-byte.
   #pragma pack(push, 1) // pack struct without alignment padding
   struct {
     // Header LRC
@@ -182,8 +182,10 @@ private:
   } _header;
   #pragma pack(pop)     // resume default struct padding
   
-  // Time of validity for the packet. This time is not sent with every packet,
-  // but is taken from the last System State or Unix Time packet delivered.
+  /// @brief Time of validity for the packet.
+  ///
+  /// This time is not sent with every packet, but is taken from the last
+  /// System State or Unix Time packet received.
   uint32_t _timeOfValiditySeconds;
   uint32_t _timeOfValidityMicroseconds;
 };
