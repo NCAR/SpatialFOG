@@ -28,7 +28,7 @@
  *      Author: burghart
  */
 
-#include <cstdint>
+#include <stdint.h>
 #include <vector>
 #include <boost/numeric/ublas/matrix.hpp>
 
