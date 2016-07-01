@@ -8,6 +8,7 @@
 #ifndef SRC_SPATIALFOG_ANPPPACKETFACTORY_H_
 #define SRC_SPATIALFOG_ANPPPACKETFACTORY_H_
 
+#include <inttypes.h>
 #include <exception>
 #include <vector>
 #include "ANPPPacket.h"
@@ -34,7 +35,7 @@ public:
   /// @param len the number of bytes available in raw
   /// @return a new ANPPPacket instance created from the given raw packet bytes.
   /// @throws ANPPPacket::BadPacketData
-  ANPPPacket * constructANPPPacket(const uint8_t * raw, uint len) const;
+  ANPPPacket * constructANPPPacket(const uint8_t * raw, uint32_t len) const;
 
 private:
   /// @brief Pointer to the singleton instance
