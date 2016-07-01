@@ -8,7 +8,7 @@
 #ifndef SRC_SPATIALFOG_ANPPPACKET_H_
 #define SRC_SPATIALFOG_ANPPPACKET_H_
 
-#include <cinttypes>
+#include <inttypes.h>
 #include <exception>
 #include <string>
 #include <vector>
@@ -63,14 +63,42 @@ public:
     return(timeOfValiditySeconds() + 1.0e-6 * timeOfValidityMicroseconds());
   }
 
+  /// @brief Exception thrown if the LRC in the header does not match the
+  /// LRC calculated from the header contents.
+  class BadHeaderLRC : public std::exception {
+  public:
+	  BadHeaderLRC(std::string msg) : _what(msg) {}
+	  virtual ~BadHeaderLRC() throw ();
+	  virtual const char * what() { return(_what.c_str()); }
+  private:
+	  std::string _what;
+  };
+
   /// @brief Exception thrown if packet data passed to the constructor is bad.
+  ///
+  /// Packet data can be considered bad if the LRC in the header
   class BadPacketData : public std::exception {
   public:
     BadPacketData(std::string msg) : _what(msg) {}
-    
+    virtual ~BadPacketData() throw ();
     virtual const char * what() { return(_what.c_str()); }
   private:
     std::string _what;
+  };
+
+  /// @brief Exception thrown if the number of bytes passed to the constructor
+  /// is not enough to construct a complete packet.
+  ///
+  /// The number of bytes passed to the constructor must be at least 5
+  /// (the size of the header) + the number of packet data bytes given in the
+  /// header (up to 255).
+  class NeedMoreData : public std::exception {
+  public:
+	  NeedMoreData(std::string msg) : _what(msg) {}
+	  virtual ~NeedMoreData() throw ();
+	  virtual const char * what() { return(_what.c_str()); }
+  private:
+	  std::string _what;
   };
 
   /// @brief Calculate and return the ISO 1155 Longitudinal Redundancy Check 
@@ -123,7 +151,7 @@ protected:
   /// @param expectedDataLen the expected length of the non-header data in
   /// the packet (or zero if the expected length is unknown)
   /// @throws BadPacketData
-  ANPPPacket(const void * rawData, uint rawLength, uint8_t expectedId,
+  ANPPPacket(const void * rawData, uint32_t rawLength, uint8_t expectedId,
              uint8_t expectedDataLen = 0);
 
   /// @brief Constructor which sets header values.
@@ -132,7 +160,7 @@ protected:
   ANPPPacket(uint8_t packetId, uint8_t packetDataLen);
 
   /// @brief The fixed length of the ANPP packet header: 5 bytes
-  static const uint _HEADER_LEN = 5;
+  static const uint8_t _HEADER_LEN = 5;
 
   /// @brief Recalculate the LRC and CRC in the header to reflect all of the
   /// other values in the packet.

@@ -19,7 +19,9 @@ LOGGING("ANPPPacket");
 uint32_t ANPPPacket::_LatestTimeOfValiditySeconds = 0;
 uint32_t ANPPPacket::_LatestTimeOfValidityMicroseconds = 0;
 
-
+ANPPPacket::BadHeaderLRC::~BadHeaderLRC() throw () {}
+ANPPPacket::BadPacketData::~BadPacketData() throw () {}
+ANPPPacket::NeedMoreData::~NeedMoreData() throw () {}
 
 ANPPPacket::ANPPPacket(const void * rawData, uint rawLength, uint8_t expectedId,
                        uint8_t expectedDataLen) : 
@@ -41,7 +43,7 @@ ANPPPacket::ANPPPacket(const void * rawData, uint rawLength, uint8_t expectedId,
   if (rawLength < 5) {
     ss << "Raw packet size (" << rawLength << 
         ") is less than header length (" << _HEADER_LEN << ")";
-    throw BadPacketData(ss.str());
+    throw NeedMoreData(ss.str());
   }
   
   // Copy the 5-byte header into our equivalent struct
@@ -54,7 +56,7 @@ ANPPPacket::ANPPPacket(const void * rawData, uint rawLength, uint8_t expectedId,
   if (calculatedLRC != headerLRC()) {
     ss << "Header LRC 0x" << std::hex << headerLRC() <<
         " does not match calculated LRC 0x" << uint(calculatedLRC);
-    throw BadPacketData(ss.str());
+    throw BadHeaderLRC(ss.str());
   }
 
   // Make sure the raw packet contains enough bytes for the header + the data
@@ -63,7 +65,7 @@ ANPPPacket::ANPPPacket(const void * rawData, uint rawLength, uint8_t expectedId,
     ss << "Raw packet size (" << rawLength << 
         ") is less than the required size (" << packetDataLen() + _HEADER_LEN <<
         ")";
-    throw BadPacketData(ss.str());
+    throw NeedMoreData(ss.str());
   }
 
   // CRC of the data portion of the packet is in bytes 3-4. Calculate actual 
