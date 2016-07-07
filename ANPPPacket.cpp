@@ -108,7 +108,9 @@ ANPPPacket::_CalculateCRC(const void *data, int length)
 }
 
 void
-ANPPPacket::_initializeHeaderFromRaw(const void * rawData, uint32_t rawLength) {
+ANPPPacket::_initializeFromRaw(const void * rawData, uint32_t rawLength) {
+  const uint8_t * uint8Data = reinterpret_cast<const uint8_t*>(rawData);
+
   // ANPP packets contain little-endian data, and much of the implementation
   // here assumes the machine we're working on is also little-endian.
   //
@@ -134,16 +136,16 @@ ANPPPacket::_initializeHeaderFromRaw(const void * rawData, uint32_t rawLength) {
 
   // Corner case: An all-zero header will give a valid LRC, but is not really
   // a valid packet header, because all valid packets have a non-zero data
-  // length.
+  // length. Throw BadHeader in this case.
   uint headerSum = 0;
   for (int i = 0; i < _HEADER_LEN; i++) {
-      headerSum += reinterpret_cast<const uint8_t*>(rawData)[i];
+      headerSum += uint8Data[i];
   }
   if (headerSum == 0) {
       throw BadHeader("All-zero header");
   }
 
-  // Copy the 5-byte header into our equivalent header struct
+  // Copy the 5-byte header into our header struct
   memcpy(&_header, rawData, _HEADER_LEN);
 
   // Byte 0 of the header contains the LRC for the remaining four bytes of the
@@ -155,6 +157,17 @@ ANPPPacket::_initializeHeaderFromRaw(const void * rawData, uint32_t rawLength) {
           " does not match calculated LRC 0x" << uint(calculatedLRC);
     throw BadHeader(oss.str());
   }
+
+  // With the header in place, we now know the packet data length. If rawData
+  // does not have enough bytes to provide the header + the data length, throw
+  // NeedMoreData.
+  if (rawLength < fullPacketLen()) {
+      oss << "Still need " << fullPacketLen() - rawLength << " more bytes";
+      throw NeedMoreData(oss.str());
+  }
+
+  // Copy the data bytes into the packet's _dataPtr.
+  memcpy(_dataPtr, uint8Data + _HEADER_LEN, packetDataLen());
 }
 
 void

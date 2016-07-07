@@ -112,14 +112,21 @@ public:
 protected:
   friend class ANPPPacketFactory;
 
-  /// @brief This method unpacks the 5-byte ANPP header, sets the time of
-  /// validity for the packet, and performs header validation.
+  /// @brief Initialize from raw packet data bytes.
+  ///
+  /// This method unpacks the 5-byte ANPP header, sets the time of
+  /// validity for the packet, and performs header validation, and copies the
+  /// non-header data contents into _dataPtr.
+  ///
+  /// The _dataPtr member must be set before calling this method.
   /// @param rawData pointer to raw ANPP packet data
   /// @param rawLength number of bytes available in rawData
-  /// @throw NeedMoreData if rawLength is less than 5 bytes.
+  /// @throw NeedMoreData if rawLength is less than 5 bytes (the header length),
+  /// or if rawLength is less than the header length + the packet data length
+  /// read from the header.
   /// @throw BadHeaderLRC if the LRC recorded in the header does not match
   /// the LRC computed from the header contents.
-  void _initializeHeaderFromRaw(const void * rawData, uint32_t rawLength);
+  void _initializeFromRaw(const void * rawData, uint32_t rawLength);
 
   /// @brief Constructor which sets header values.
   /// @param packetId the packet ID
