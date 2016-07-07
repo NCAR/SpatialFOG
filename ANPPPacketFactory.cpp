@@ -35,27 +35,8 @@ ANPPPacketFactory::constructANPPPacket(const uint8_t * raw, uint len) const {
   // Construct a non-specialized ANPPPacket first, just to get access to the
   // packet ID.
   GenericPacket * gPacket = new GenericPacket(raw, len);
-
-  std::ostringstream oss;
-  for (int i = 0; i < 13; i++) {
-      oss << std::setw(2) << std::setfill('0') << std::hex << uint(raw[i]) << " ";
-      if (i == 4) {
-          oss << "  ";
-      }
-  }
-  ILOG << "Raw header + data: " << oss.str();
-  ILOG << "Created generic packet with id " << gPacket->packetId() <<
-          " and data length " << gPacket->packetDataLen();
-
-  oss.flush();
-  for (int i = 0; i < 8; i++) {
-      oss << std::setw(2) << std::setfill('0') << std::hex << uint(gPacket->_dataPtr[i]) << " ";
-  }
-  ILOG << "Constructed packet data: " << oss.str();
-
-  delete gPacket;
-
   int packetId = gPacket->packetId();
+  delete gPacket;
 
   // Construct the appropriate specialized packet class based on the packet ID
   switch(packetId) {
@@ -86,13 +67,8 @@ ANPPPacketFactory::constructANPPPacket(const uint8_t * raw, uint len) const {
       return new EulerPacket(raw, len);
     // For other IDs, create an unspecialized instance
     default:
-      WLOG << "Creating a generic ANPPPacket for unhandled packet ID " <<
-          uint(packetId);
-      try {
-          return new GenericPacket(raw, len);
-      } catch (std::exception & ex) {
-          ELOG << "2nd GenericPacket failed!";
-          exit(1);
-      }
+      WLOG << "No specialized class for packet ID " << packetId <<
+          ", using GenericPacket";
+      return new GenericPacket(raw, len);
   }
 }
