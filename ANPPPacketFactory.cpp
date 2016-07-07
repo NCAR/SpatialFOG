@@ -5,16 +5,21 @@
  *      Author: burghart
  */
 
+#include <iomanip>
 #include <sstream>
+#include <logx/Logging.h>
 #include "AckPacket.h"
 #include "EulerPacket.h"
 #include "EulerStdDevPacket.h"
+#include "GenericPacket.h"
 #include "NEDVelocityPacket.h"
 #include "SatellitesPacket.h"
 #include "SystemStatePacket.h"
 #include "UnixTimePacket.h"
 #include "VelocityStdDevPacket.h"
 #include "ANPPPacketFactory.h"
+
+LOGGING("ANPPPacketFactory")
 
 // Pointer to our singleton instance, which is instantiated at first use.
 ANPPPacketFactory * ANPPPacketFactory::_instancePtr = 0;
@@ -27,16 +32,32 @@ ANPPPacketFactory::~ANPPPacketFactory() {
 
 ANPPPacket*
 ANPPPacketFactory::constructANPPPacket(const uint8_t * raw, uint len) const {
-  // Make sure we got at least 5 bytes and test that the first 5 bytes are
-  // a good ANPP header.
-  if (len < 5 || ! ANPPPacket::IsValidHeader(raw)) {
-    throw(ANPPPacket::BadPacketData("Raw data does not contain a good ANPP packet header"));
+  // Construct a non-specialized ANPPPacket first, just to get access to the
+  // packet ID.
+  GenericPacket * gPacket = new GenericPacket(raw, len);
+
+  std::ostringstream oss;
+  for (int i = 0; i < 13; i++) {
+      oss << std::setw(2) << std::setfill('0') << std::hex << uint(raw[i]) << " ";
+      if (i == 4) {
+          oss << "  ";
+      }
   }
+  ILOG << "Raw header + data: " << oss.str();
+  ILOG << "Created generic packet with id " << gPacket->packetId() <<
+          " and data length " << gPacket->packetDataLen();
 
-  // Extract the packet ID from the ANPP header
-  uint8_t packetId = raw[1];
+  oss.flush();
+  for (int i = 0; i < 8; i++) {
+      oss << std::setw(2) << std::setfill('0') << std::hex << uint(gPacket->_dataPtr[i]) << " ";
+  }
+  ILOG << "Constructed packet data: " << oss.str();
 
-  // Call the appropriate constructor based on the packet ID
+  delete gPacket;
+
+  int packetId = gPacket->packetId();
+
+  // Construct the appropriate specialized packet class based on the packet ID
   switch(packetId) {
     // Acknowledge packet data -> AckPacket instance
     case 0:
@@ -63,10 +84,15 @@ ANPPPacketFactory::constructANPPPacket(const uint8_t * raw, uint len) const {
     // Euler Orientation packet data -> EulerPacket instance
     case 39:
       return new EulerPacket(raw, len);
-    // For other IDs, we don't have a class to match the packet id, so bail out
+    // For other IDs, create an unspecialized instance
     default:
-      std::ostringstream oss;
-      oss << "No ANPPPacket subclass for packet id " << uint(packetId);
-      throw(ANPPPacket::BadPacketData(oss.str()));
+      WLOG << "Creating a generic ANPPPacket for unhandled packet ID " <<
+          uint(packetId);
+      try {
+          return new GenericPacket(raw, len);
+      } catch (std::exception & ex) {
+          ELOG << "2nd GenericPacket failed!";
+          exit(1);
+      }
   }
 }

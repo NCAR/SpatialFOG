@@ -19,84 +19,21 @@ LOGGING("ANPPPacket");
 uint32_t ANPPPacket::_LatestTimeOfValiditySeconds = 0;
 uint32_t ANPPPacket::_LatestTimeOfValidityMicroseconds = 0;
 
-ANPPPacket::BadHeaderLRC::~BadHeaderLRC() throw () {}
-ANPPPacket::BadPacketData::~BadPacketData() throw () {}
+ANPPPacket::BadHeader::~BadHeader() throw () {}
 ANPPPacket::NeedMoreData::~NeedMoreData() throw () {}
 
-ANPPPacket::ANPPPacket(const void * rawData, uint rawLength, uint8_t expectedId,
-                       uint8_t expectedDataLen) : 
-  _dataPtr(0),
-  // Use latest time of validity we've received
-  _timeOfValiditySeconds(_LatestTimeOfValiditySeconds),
-  _timeOfValidityMicroseconds(_LatestTimeOfValidityMicroseconds) {
-  std::stringstream ss;
-
-  // ANPP packets contain little-endian data, and much of the implementation
-  // here assumes the machine we're working on is also little-endian.
-  assert(MachineIsLittleEndian());
-
-  // Verify that our header struct is packed without added padding bytes
-  assert(sizeof(_header) == _HEADER_LEN);
-
-  // The ANPP header is 5 bytes long. If we have less than that, there's
-  // a problem.
-  if (rawLength < 5) {
-    ss << "Raw packet size (" << rawLength << 
-        ") is less than header length (" << _HEADER_LEN << ")";
-    throw NeedMoreData(ss.str());
-  }
-  
-  // Copy the 5-byte header into our equivalent struct
-  memcpy(&_header, rawData, _HEADER_LEN);
-
-  // Byte 0 of the header contains the LRC for the next four bytes.
-  // Read it and confirm that it's correct.
-  uint8_t calculatedLRC = 
-      CalculateLRC(reinterpret_cast<const uint8_t*>(&_header) + 1, 4);
-  if (calculatedLRC != headerLRC()) {
-    ss << "Header LRC 0x" << std::hex << headerLRC() <<
-        " does not match calculated LRC 0x" << uint(calculatedLRC);
-    throw BadHeaderLRC(ss.str());
-  }
-
-  // Make sure the raw packet contains enough bytes for the header + the data
-  // length.
-  if (rawLength < uint(packetDataLen() + _HEADER_LEN)) {
-    ss << "Raw packet size (" << rawLength << 
-        ") is less than the required size (" << packetDataLen() + _HEADER_LEN <<
-        ")";
-    throw NeedMoreData(ss.str());
-  }
-
-  // CRC of the data portion of the packet is in bytes 3-4. Calculate actual 
-  // data CRC and make sure it matches.
-  uint16_t calculatedCRC = CalculateCRC(
-      reinterpret_cast<const uint8_t*>(rawData) + _HEADER_LEN,
-      packetDataLen());
-  if (calculatedCRC != packetDataCRC()) {
-    ss << "Header CRC 0x" << std::hex << packetDataCRC() << 
-        " does not match calculated CRC 0x" << calculatedCRC;
-    throw BadPacketData(ss.str());
-  }
-
-  // Did we get the expected packet ID?
-  if (packetId() != expectedId) {
-    ss << "Got packet ID " << packetId() << " when expecting " << 
-        uint(expectedId);
-    throw BadPacketData(ss.str());
-  }
-
-  // If we got an expected data length, test if the given packet data length
-  // matches it.
-  if (expectedDataLen && (packetDataLen() != expectedDataLen)) {
-    ss << "Got packet data length " << packetDataLen() << 
-        " when expecting " << uint(expectedDataLen);
-    throw BadPacketData(ss.str());
-  }  
+ANPPPacket::ANPPPacket() :
+    _dataPtr(NULL),
+    _timeOfValiditySeconds(0),
+    _timeOfValidityMicroseconds(0) {
+    // Verify that our header struct is packed without added padding bytes
+    assert(sizeof(_header) == _HEADER_LEN);
+    // Zero-fill the header
+    memset(reinterpret_cast<void*>(&_header), 0, sizeof(_header));
 }
 
 ANPPPacket::ANPPPacket(uint8_t packetId, uint8_t packetDataLen) :
-  _dataPtr(0),
+  _dataPtr(NULL),
   // Use latest time of validity we've received
   _timeOfValiditySeconds(_LatestTimeOfValiditySeconds),
   _timeOfValidityMicroseconds(_LatestTimeOfValidityMicroseconds) {
@@ -108,7 +45,7 @@ ANPPPacket::~ANPPPacket() {
 }
 
 uint8_t
-ANPPPacket::CalculateLRC(const void * data, int length) {
+ANPPPacket::_CalculateLRC(const void * data, int length) {
   const uint8_t *bytes = reinterpret_cast<const uint8_t*>(data);
   uint8_t lrc = 0;
   for (int i = 0; i < length; i++) {
@@ -159,7 +96,7 @@ static const uint16_t CRC16_TABLE[256] =
 };
 
 uint16_t
-ANPPPacket::CalculateCRC(const void *data, int length)
+ANPPPacket::_CalculateCRC(const void *data, int length)
 {
   const uint8_t *bytes = (const uint8_t *) data;
   uint16_t crc = 0xFFFF, i;
@@ -171,12 +108,67 @@ ANPPPacket::CalculateCRC(const void *data, int length)
 }
 
 void
+ANPPPacket::_initializeHeaderFromRaw(const void * rawData, uint32_t rawLength) {
+  // ANPP packets contain little-endian data, and much of the implementation
+  // here assumes the machine we're working on is also little-endian.
+  //
+  // The static variable will be evaluated once on the first call to
+  // this method.
+  static const bool machineIsLittleEndian = MachineIsLittleEndian();
+  assert(machineIsLittleEndian);
+
+  // Verify that our header struct is packed without added padding bytes
+  assert(sizeof(_header) == _HEADER_LEN);
+
+  // The ANPP header is 5 bytes long. If we have less than that, throw a
+  // NeedMoreData exception.
+  std::ostringstream oss;
+  if (rawLength < _HEADER_LEN) {
+    oss << "Raw packet size (" << rawLength <<
+          ") is less than header length (" << _HEADER_LEN << ")";
+    throw NeedMoreData(oss.str());
+  }
+
+  // Assign the latest time of validity we received as this packet's time
+  _setTimeOfValidity();
+
+  // Corner case: An all-zero header will give a valid LRC, but is not really
+  // a valid packet header, because all valid packets have a non-zero data
+  // length.
+  uint headerSum = 0;
+  for (int i = 0; i < _HEADER_LEN; i++) {
+      headerSum += reinterpret_cast<const uint8_t*>(rawData)[i];
+  }
+  if (headerSum == 0) {
+      throw BadHeader("All-zero header");
+  }
+
+  // Copy the 5-byte header into our equivalent header struct
+  memcpy(&_header, rawData, _HEADER_LEN);
+
+  // Byte 0 of the header contains the LRC for the remaining four bytes of the
+  // header. Read it and confirm that it's correct.
+  uint8_t calculatedLRC =
+          _CalculateLRC(reinterpret_cast<const uint8_t*>(&_header) + 1, 4);
+  if (calculatedLRC != headerLRC()) {
+    oss << "Header LRC 0x" << std::hex << headerLRC() <<
+          " does not match calculated LRC 0x" << uint(calculatedLRC);
+    throw BadHeader(oss.str());
+  }
+}
+
+void
 ANPPPacket::_updateHeader() {
   // Do the CRC first, since the CRC itself goes into the calculation of 
   // LRC below.
-  _header._packetDataCRC = _dataPtr ? CalculateCRC(_dataPtr, packetDataLen()) : 0;
+  _header._packetDataCRC = _dataPtr ? _CalculateCRC(_dataPtr, packetDataLen()) : 0;
   
   // Now calculate the header LRC from the last four bytes of the header.
   _header._headerLRC = 
-      CalculateLRC(reinterpret_cast<const uint8_t*>(&_header) + 1, 4);
+      _CalculateLRC(reinterpret_cast<const uint8_t*>(&_header) + 1, 4);
+}
+
+bool
+ANPPPacket::crcIsGood() {
+    return(crcFromHeader() == _CalculateCRC(_dataPtr, packetDataLen()));
 }

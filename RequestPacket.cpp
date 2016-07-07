@@ -16,7 +16,7 @@ RequestPacket::RequestPacket(std::vector<uint8_t> idList) :
   ANPPPacket(_PACKET_ID, idList.size()) {
   // It's a problem if they request more that 255 packet ids...
   assert(idList.size() <= 255);
-  
+
   // Copy the IDs into _requestedPacketIds
   _nRequestedPacketIds = idList.size();
   memcpy(_requestedPacketIds, idList.data(), _nRequestedPacketIds);

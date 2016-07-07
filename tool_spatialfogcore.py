@@ -13,6 +13,7 @@ sources = Split('''
     ANPPPacketFactory.cpp
     EulerPacket.cpp
     EulerStdDevPacket.cpp
+    GenericPacket.cpp
     NEDVelocityPacket.cpp
     RequestPacket.cpp
     SatellitesPacket.cpp
@@ -28,6 +29,7 @@ headers = Split('''
     ANPPPacketFactory.h
     EulerPacket.h
     EulerStdDevPacket.h
+    GenericPacket.h
     NEDVelocityPacket.h
     RequestPacket.h
     SatellitesPacket.h

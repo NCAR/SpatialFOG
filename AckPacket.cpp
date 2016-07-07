@@ -24,10 +24,15 @@ const std::string AckPacket::AckResultStrings[] = {
     "unknown packet"
 };
 
-AckPacket::AckPacket(const void* raw, uint length) :
-  ANPPPacket(raw, length, _PACKET_ID, _PACKET_DATA_LEN) {
-  // Make sure our _data struct is the correct size and copy the raw 
+AckPacket::AckPacket(const void* raw, uint length) {
+  // Make sure our struct packs to the expected size to match the raw ANPP
+  // packet
   assert(sizeof(_data) == _PACKET_DATA_LEN);
+
+  // Unpack the header and set data validity time
+  _initializeHeaderFromRaw(raw, length);
+  assert(packetDataLen() == _PACKET_DATA_LEN);
+  assert(packetId() == _PACKET_ID);
 
   // Copy the raw bytes after the header into our data struct
   memcpy(&_data, reinterpret_cast<const uint8_t *>(raw) + _HEADER_LEN, 
@@ -35,9 +40,6 @@ AckPacket::AckPacket(const void* raw, uint length) :
 
   // Set the data pointer
   _dataPtr = reinterpret_cast<uint8_t*>(&_data);
-
-  // Update the header LRC and CRC to reflect the new data contents
-  _updateHeader();
 }
 
 AckPacket::~AckPacket() {

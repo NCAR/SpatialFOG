@@ -14,10 +14,25 @@
 
 class AckPacket: public ANPPPacket {
 public:
-  /// @brief Construct from raw packet data bytes
-  /// @param raw the raw packet bytes
-  /// @param length the number of bytes available in raw
-  AckPacket(const void* raw, uint length);
+  /// @brief Construct from the data in rawData, which contains rawLength
+  /// usable bytes.
+  ///
+  /// If the constructor is successful, the number of bytes used from raw
+  /// is given by the fullPacketLen() method of the returned instance.
+  ///
+  /// It is recommended that the user call the crcIsGood() method to verify
+  /// that the CRC contained in the packet header matches the CRC calculated
+  /// for the data portion of the packet.
+  ///
+  /// @param rawData pointer to raw data bytes
+  /// @param rawLength the number of bytes available in rawData
+  ///
+  /// @throw BadHeaderLRC if the LRC computed for the header contents does not
+  /// match the LRC recorded at the start of the header.
+  /// @throw NeedMoreData if length is less than 5 bytes (the header length)
+  /// or if length is shorter than the header length + the data length written
+  /// in the header
+  AckPacket(const void* rawData, uint rawLength);
 
   virtual ~AckPacket();
   

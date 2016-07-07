@@ -8,7 +8,7 @@
 #ifndef SRC_SPATIALFOG_ANPPPACKET_H_
 #define SRC_SPATIALFOG_ANPPPACKET_H_
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <exception>
 #include <string>
 #include <vector>
@@ -17,11 +17,9 @@
 /// @brief Base class for C++ representation of Advanced Navigation Packet
 /// Protocol (ANPP) packets.
 ///
-/// There is no public constructor for this virtual base class. Only subclasses
-/// can be instantiated directly.
-///
 class ANPPPacket {
 public:
+  ANPPPacket();
   virtual ~ANPPPacket();
   
   /// @brief Return the ANPP header LRC
@@ -32,14 +30,21 @@ public:
   /// @return the ANPP packet ID
   int packetId() const { return(_header._packetId); }
 
-  /// @brief Return the size of the associated ANPP packet, not counting the
+  /// @brief Return the size in bytes of the raw ANPP packet, not counting the
   /// header.
   /// @return the size of the associated ANPP packet, not counting the header.
-  int packetDataLen() const { return(_header._packetDataLen); }
+  uint32_t packetDataLen() const { return(_header._packetDataLen); }
   
-  /// @brief Return the CRC for the data (non-header) portion of the packet.
-  /// @return the CRC for the data (non-header) portion of the packet.
-  uint16_t packetDataCRC() { return(_header._packetDataCRC); }
+  /// @brief Return the size in bytes of the raw ANPP packet, including the
+  /// header.
+  /// @return the size in bytes of the raw ANPP packet, including the header.
+  uint32_t fullPacketLen() const { return(_HEADER_LEN + packetDataLen()); }
+
+  /// @brief Return the CRC for the data (non-header) portion of the packet,
+  /// as recorded in the packet header.
+  /// @return the CRC for the data (non-header) portion of the packet, as
+  /// recorded in the packet header.
+  uint16_t crcFromHeader() { return(_header._packetDataCRC); }
   
   /// @brief Return the time of validity for the packet, in whole seconds since
   /// 1970-01-01 00:00:00 UTC.
@@ -63,27 +68,19 @@ public:
     return(timeOfValiditySeconds() + 1.0e-6 * timeOfValidityMicroseconds());
   }
 
+  /// @brief Return true iff the CRC recorded in the header matches the CRC
+  /// calculated for the data portion of the packet.
+  bool crcIsGood();
+
   /// @brief Exception thrown if the LRC in the header does not match the
-  /// LRC calculated from the header contents.
-  class BadHeaderLRC : public std::exception {
+  /// LRC calculated from the header contents, or if the header is all zeros.
+  class BadHeader : public std::exception {
   public:
-	  BadHeaderLRC(std::string msg) : _what(msg) {}
-	  virtual ~BadHeaderLRC() throw ();
+	  BadHeader(std::string msg) : _what(msg) {}
+	  virtual ~BadHeader() throw ();
 	  virtual const char * what() { return(_what.c_str()); }
   private:
 	  std::string _what;
-  };
-
-  /// @brief Exception thrown if packet data passed to the constructor is bad.
-  ///
-  /// Packet data can be considered bad if the LRC in the header
-  class BadPacketData : public std::exception {
-  public:
-    BadPacketData(std::string msg) : _what(msg) {}
-    virtual ~BadPacketData() throw ();
-    virtual const char * what() { return(_what.c_str()); }
-  private:
-    std::string _what;
   };
 
   /// @brief Exception thrown if the number of bytes passed to the constructor
@@ -101,19 +98,6 @@ public:
 	  std::string _what;
   };
 
-  /// @brief Calculate and return the ISO 1155 Longitudinal Redundancy Check 
-  /// (LRC) for a series of bytes.
-  /// @param data pointer to the array of bytes to be checked
-  /// @param length the number of bytes in the array to check
-  /// @return the ISO 1155 Longitudinal Redundancy Check (LRC) for the bytes
-  static uint8_t CalculateLRC(const void * data, int length);
-
-  /// @brief Calculate and return the CRC16-CCITT for a series of bytes.
-  /// @param data pointer to the array of bytes to be checked
-  /// @param length the number of bytes in the array to check
-  /// @return the CRC16-CCITT for the bytes
-  static uint16_t CalculateCRC(const void * data, int length);
-
   /// @brief Return true iff the machine is little-endian.
   /// @return true iff the machine is little-endian.
   static bool MachineIsLittleEndian() {
@@ -125,34 +109,17 @@ public:
     return(endianTest.c[0] == 0x04);
   }
   
-  /// @brief Return true iff the first 5 bytes pointed to by bytes comprise a
-  /// valid ANPP packet header.
-  /// @param bytes a pointer to at least 5 bytes of readable memory
-  /// @return true iff the first 5 bytes pointed to by bytes comprise a valid
-  /// ANPP packet header.
-  static bool IsValidHeader(const uint8_t * bytes) {
-    // In a valid 5-byte ANPP packet header, the first byte contains the LRC
-    // for the following four bytes.
-    return(bytes[0] == CalculateLRC(bytes + 1, 4));
-  }
-
 protected:
   friend class ANPPPacketFactory;
 
-  /// @brief This constructor unpacks the ANPP header and performs some basic 
-  /// packet validation.
-  ///
-  /// The constructor also sets the time of validity of the packet to the
-  /// latest time of validity obtained from a System State or Unix Time packet.
-  ///
+  /// @brief This method unpacks the 5-byte ANPP header, sets the time of
+  /// validity for the packet, and performs header validation.
   /// @param rawData pointer to raw ANPP packet data
   /// @param rawLength number of bytes available in rawData
-  /// @param expectedId the expected packet ID
-  /// @param expectedDataLen the expected length of the non-header data in
-  /// the packet (or zero if the expected length is unknown)
-  /// @throws BadPacketData
-  ANPPPacket(const void * rawData, uint32_t rawLength, uint8_t expectedId,
-             uint8_t expectedDataLen = 0);
+  /// @throw NeedMoreData if rawLength is less than 5 bytes.
+  /// @throw BadHeaderLRC if the LRC recorded in the header does not match
+  /// the LRC computed from the header contents.
+  void _initializeHeaderFromRaw(const void * rawData, uint32_t rawLength);
 
   /// @brief Constructor which sets header values.
   /// @param packetId the packet ID
@@ -177,6 +144,13 @@ protected:
     _timeOfValidityMicroseconds = microseconds;
   }
 
+  /// @brief Set the object's time of validity to the latest time of validity
+  /// received from the Spatial FOG
+  void _setTimeOfValidity() {
+    _timeOfValiditySeconds = _LatestTimeOfValiditySeconds;
+    _timeOfValidityMicroseconds = _LatestTimeOfValidityMicroseconds;
+  }
+
   /// @brief Store the latest time of validity received from the SpatialFOG, in
   /// Unix time format. This time is sent in both System State and Unix Time 
   /// packets, and applies to all packets delivered in the same packet sequence.
@@ -190,10 +164,24 @@ protected:
   }
 
   /// @brief Pointer to memory holding the non-header data contents of the
-  /// packet. This should be set in the subclass constructors.
+  /// packet. The size of the memory pointed to must be at least packetDataLen()
+  /// bytes.
   uint8_t * _dataPtr;
 
 private:
+  /// @brief Calculate and return the ISO 1155 Longitudinal Redundancy Check
+  /// (LRC) for a series of bytes.
+  /// @param data pointer to the array of bytes to be checked
+  /// @param length the number of bytes in the array to check
+  /// @return the ISO 1155 Longitudinal Redundancy Check (LRC) for the bytes
+  static uint8_t _CalculateLRC(const void * data, int length);
+
+  /// @brief Calculate and return the CRC16-CCITT for a series of bytes.
+  /// @param data pointer to the array of bytes to be checked
+  /// @param length the number of bytes in the array to check
+  /// @return the CRC16-CCITT for the bytes
+  static uint16_t _CalculateCRC(const void * data, int length);
+
   /// @brief Contents of the header portion of the ANPP packet. We use
   /// #pragma pack(1) to force storage without any alignment padding, so that
   /// this matches the ANPP header structure byte-for-byte.
