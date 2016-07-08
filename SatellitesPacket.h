@@ -38,7 +38,7 @@ private:
     uint8_t _nGlonass;  // # of GLONASS satellites
     uint8_t _nBeiDou;   // # of BeiDou satellites
     uint8_t _nGalileo;  // # of Galileo satellites
-    uint8_t _nSBAS;     // # of SBAS satellites
+    uint8_t _nSbas;     // # of SBAS satellites
   } _data;
 
   // Resume default struct padding

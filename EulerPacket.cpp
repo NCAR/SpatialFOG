@@ -6,6 +6,7 @@
  */
 
 #include <cassert>
+#include <cmath>
 #include <cstring>
 #include <logx/Logging.h>
 #include "EulerPacket.h"
@@ -22,6 +23,10 @@ EulerPacket::EulerPacket(const void* raw, uint length) {
 
   // Initialize from the raw data
   _initializeFromRaw(raw, length);
+
+  DLOG << "Euler packet - pitch: " << 180.0 * (_data._pitch / M_PI) <<
+          ", roll: " << 180.0 * (_data._roll / M_PI) <<
+          ", heading: " << 180.0 * (_data._heading / M_PI);
 }
 
 EulerPacket::~EulerPacket() {

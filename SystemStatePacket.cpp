@@ -7,6 +7,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <iomanip>
 #include <logx/Logging.h>
 #include "SystemStatePacket.h"
 
@@ -31,6 +32,11 @@ SystemStatePacket::SystemStatePacket(const void* raw, uint length) {
   // Time of validity supplied in this packet applies to succeeding packets
   // as well. Save it in the static common location.
   _SetLatestTimeOfValidity(_data._unixTimeSeconds, _data._microseconds);
+
+  DLOG << "System State packet - system status: 0x" <<
+          std::setw(2) << std::setfill('0') << std::hex << _data._systemStatus <<
+          ", filter status: 0x" <<
+          std::setw(2) << std::setfill('0') << std::hex << _data._filterStatus;
 }
 
 SystemStatePacket::~SystemStatePacket() {
