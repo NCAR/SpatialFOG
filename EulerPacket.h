@@ -33,9 +33,9 @@ private:
   /// @brief Contents of the data portion of the ANPP Euler Orientation 
   /// Standard Deviation Packet
   struct {
-    float _roll;      // m
-    float _pitch;     // m
-    float _heading;   // m
+    float _roll;      // rad
+    float _pitch;     // rad
+    float _heading;   // rad
   } _data;
 
   // Resume default struct padding
