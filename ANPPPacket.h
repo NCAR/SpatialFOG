@@ -44,19 +44,19 @@ public:
   /// as recorded in the packet header.
   /// @return the CRC for the data (non-header) portion of the packet, as
   /// recorded in the packet header.
-  uint16_t crcFromHeader() { return(_header._packetDataCRC); }
+  uint16_t crcFromHeader() const { return(_header._packetDataCRC); }
   
   /// @brief Return the time of validity for the packet, in whole seconds since
   /// 1970-01-01 00:00:00 UTC.
   /// @return the time of validity for the packet, in whole seconds since
   /// 1970-01-01 00:00:00 UTC.
-  uint32_t timeOfValiditySeconds() { return(_timeOfValiditySeconds); }
+  uint32_t timeOfValiditySeconds() const { return(_timeOfValiditySeconds); }
   
   /// @brief Return the subsecond portion of time of validity for the packet,
   /// in microseconds.
   /// @return the subsecond portion of time of validity for the packet,
   /// in microseconds.
-  uint32_t timeOfValidityMicroseconds() { return(_timeOfValidityMicroseconds); }
+  uint32_t timeOfValidityMicroseconds() const { return(_timeOfValidityMicroseconds); }
   
   /// @brief Return the value of timeOfValiditySeconds() + 
   /// 1.0e-6 * timeOfValidityMicroseconds(), expressed as a double-precision
@@ -64,13 +64,17 @@ public:
   /// @return Return the value of timeOfValiditySeconds() + 
   /// 1.0e-6 * timeOfValidityMicroseconds(), expressed as a double-precision
   /// float.
-  double timeOfValidity() { 
+  double timeOfValidity() const {
     return(timeOfValiditySeconds() + 1.0e-6 * timeOfValidityMicroseconds());
   }
 
   /// @brief Return true iff the CRC recorded in the header matches the CRC
   /// calculated for the data portion of the packet.
-  bool crcIsGood();
+  bool crcIsGood() const;
+
+  /// @brief Return the raw ANPP representation of the packet, as a std::vector
+  /// of uint8_t.
+  std::vector<uint8_t> rawBytes() const;
 
   /// @brief Exception thrown if the LRC in the header does not match the
   /// LRC calculated from the header contents, or if the header is all zeros.

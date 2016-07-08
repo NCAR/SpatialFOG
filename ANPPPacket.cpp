@@ -182,6 +182,24 @@ ANPPPacket::_updateHeader() {
 }
 
 bool
-ANPPPacket::crcIsGood() {
+ANPPPacket::crcIsGood() const {
     return(crcFromHeader() == _CalculateCRC(_dataPtr, packetDataLen()));
+}
+
+std::vector<uint8_t>
+ANPPPacket::rawBytes() const {
+    std::vector<uint8_t> rawVec;
+
+    // Copy the header into rawVec
+    const uint8_t * headerBytes = reinterpret_cast<const uint8_t*>(&_header);
+    for (uint i = 0; i < _HEADER_LEN; i++) {
+        rawVec.push_back(headerBytes[i]);
+    }
+
+    // Copy the data bytes into rawVec
+    for (uint i = 0; i < packetDataLen(); i++) {
+        rawVec.push_back(_dataPtr[i]);
+    }
+
+    return(rawVec);
 }
