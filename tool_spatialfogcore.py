@@ -15,6 +15,7 @@ sources = Split('''
     EulerStdDevPacket.cpp
     GenericPacket.cpp
     NEDVelocityPacket.cpp
+    RawSensorsPacket.cpp
     RequestPacket.cpp
     SatellitesPacket.cpp
     SpatialFOGCore.cpp
@@ -31,6 +32,7 @@ headers = Split('''
     EulerStdDevPacket.h
     GenericPacket.h
     NEDVelocityPacket.h
+    RawSensorsPacket.h
     RequestPacket.h
     SatellitesPacket.h
     SpatialFOGCore.h
