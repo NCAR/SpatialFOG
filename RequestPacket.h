@@ -14,7 +14,11 @@
 
 class RequestPacket: public ANPPPacket {
 public:
-  /// @brief Instantiate from a list of packet IDs to be requested.
+  /// @brief Construct with a single packet ID to be requested.
+  /// @param id the packet ID to be requested
+  RequestPacket(uint8_t id);
+
+  /// @brief Construct with a list of packet IDs to be requested.
   /// @param idList a vector listing the packet IDs to be requested
   RequestPacket(const std::vector<uint8_t> idList);
   
