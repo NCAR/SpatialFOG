@@ -13,6 +13,7 @@
 #include "EulerStdDevPacket.h"
 #include "GenericPacket.h"
 #include "NEDVelocityPacket.h"
+#include "RawSensorsPacket.h"
 #include "SatellitesPacket.h"
 #include "SystemStatePacket.h"
 #include "UnixTimePacket.h"
@@ -52,11 +53,14 @@ ANPPPacketFactory::constructANPPPacket(const uint8_t * raw, uint len) const {
     // Velocity Standard Deviation packet data -> VelocityStdDevPacket instance
     case 25:
       return new VelocityStdDevPacket(raw, len);
-    // Euler Orientation Standard Deviation packet data -> VelocityStdDevPacket
+    // Euler Orientation Standard Deviation packet data -> EulerStdDevPacket
     // instance
     case 26:
       return new EulerStdDevPacket(raw, len);
-    // Satellites packet data -> VelocityStdDevPacket instance
+    // Raw Sensors packet data -> RawSensorsPacket instance
+    case 28:
+      return new RawSensorsPacket(raw, len);
+    // Satellites packet data -> SatellitesPacket instance
     case 30:
       return new SatellitesPacket(raw, len);
     // NED Velocity packet data -> NEDVelocityPacket instance
