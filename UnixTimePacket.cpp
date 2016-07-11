@@ -7,6 +7,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <ctime>
 #include <logx/Logging.h>
 #include "UnixTimePacket.h"
 
@@ -31,6 +32,16 @@ UnixTimePacket::UnixTimePacket(const void* raw, uint length) {
   // Time of validity supplied in this packet applies to succeeding packets
   // as well. Save it in the static common location.
   _SetLatestTimeOfValidity(_data._unixTimeSeconds, _data._microseconds);
+
+  // Lots of hoo-hah to get a string representation of time for our DLOG
+  // message below...
+  time_t tt = timeOfValiditySeconds();
+  struct tm * tmstruct = gmtime(&tt);
+  char charbuf[64];
+  strftime(charbuf, sizeof(charbuf), "%Y/%m/%d %H:%M:%S", tmstruct);
+  snprintf(charbuf + strlen(charbuf), sizeof(charbuf) - strlen(charbuf),
+           ".%06d", timeOfValidityMicroseconds());
+  DLOG << "UnixTime packet - " << charbuf;
 }
 
 UnixTimePacket::~UnixTimePacket() {
