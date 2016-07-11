@@ -126,8 +126,7 @@ ANPPPacket::_initializeFromRaw(const void * rawData, uint32_t rawLength) {
   // NeedMoreData exception.
   std::ostringstream oss;
   if (rawLength < _HEADER_LEN) {
-    oss << "Raw packet size (" << rawLength <<
-          ") is less than header length (" << _HEADER_LEN << ")";
+    oss << "Need " << _HEADER_LEN - rawLength << " more bytes for ANPP header";
     throw NeedMoreData(oss.str());
   }
 
@@ -162,7 +161,7 @@ ANPPPacket::_initializeFromRaw(const void * rawData, uint32_t rawLength) {
   // does not have enough bytes to provide the header + the data length, throw
   // NeedMoreData.
   if (rawLength < fullPacketLen()) {
-      oss << "Still need " << fullPacketLen() - rawLength << " more bytes";
+      oss << "Need " << fullPacketLen() - rawLength << " more data bytes";
       throw NeedMoreData(oss.str());
   }
 
