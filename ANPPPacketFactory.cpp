@@ -43,36 +43,44 @@ ANPPPacketFactory::constructANPPPacket(const uint8_t * raw, uint len) const {
   switch(packetId) {
     // Acknowledge packet data -> AckPacket instance
     case 0:
+      DLOG << "Constructing an AckPacket";
       return new AckPacket(raw, len);
     // System State packet data -> SystemStatePacket instance
     case 20:
+      DLOG << "Constructing a SystemStatePacket";
       return new SystemStatePacket(raw, len);
     // Unix Time packet data -> UnixTimePacket instance
     case 21:
+      DLOG << "Constructing a UnixTimePacket";
       return new UnixTimePacket(raw, len);
     // Velocity Standard Deviation packet data -> VelocityStdDevPacket instance
     case 25:
+      DLOG << "Constructing a VelocityStdDevPacket";
       return new VelocityStdDevPacket(raw, len);
     // Euler Orientation Standard Deviation packet data -> EulerStdDevPacket
     // instance
     case 26:
+      DLOG << "Constructing an EulerStdDevPacket";
       return new EulerStdDevPacket(raw, len);
     // Raw Sensors packet data -> RawSensorsPacket instance
     case 28:
+      DLOG << "Constructing a RawSensorsPacket";
       return new RawSensorsPacket(raw, len);
     // Satellites packet data -> SatellitesPacket instance
     case 30:
+      DLOG << "Constructing a SatellitesPacket";
       return new SatellitesPacket(raw, len);
     // NED Velocity packet data -> NEDVelocityPacket instance
     case 35:
+      DLOG << "Constructing a NEDVelocityPacket";
       return new NEDVelocityPacket(raw, len);
     // Euler Orientation packet data -> EulerPacket instance
     case 39:
+      DLOG << "Constructing an EulerPacket";
       return new EulerPacket(raw, len);
     // For other IDs, create an unspecialized instance
     default:
-      WLOG << "No specialized class for packet ID " << packetId <<
-          ", using GenericPacket";
+      DLOG << "Constructing a GenericPacket (id " << packetId << ")";
       return new GenericPacket(raw, len);
   }
 }
