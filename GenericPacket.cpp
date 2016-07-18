@@ -18,6 +18,9 @@ GenericPacket::GenericPacket(const void* raw, uint length) {
 
   // Initialize from the raw data
   _initializeFromRaw(raw, length);
+
+  DLOG << "Generic packet - ID: " << packetId() <<
+          ", data length: " << packetDataLen();
 }
 
 GenericPacket::~GenericPacket() {
