@@ -33,6 +33,9 @@ AckPacket::AckPacket(const void* raw, uint length) {
   _dataPtr = reinterpret_cast<uint8_t*>(&_data);
   // Initialize from the raw data
   _initializeFromRaw(raw, length);
+
+  DLOG << "Acknowledgment packet - For pkt ID " << uint(ackedPacketId()) <<
+          ": " << ackResultString();
 }
 
 AckPacket::~AckPacket() {
