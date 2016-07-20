@@ -10,9 +10,10 @@
 
 #include <cinttypes>
 #include <string>
-#include "ANPPPacket.h"
 
-class RequestPacket: public ANPPPacket {
+#include "AnppPacket.h"
+
+class RequestPacket: public AnppPacket {
 public:
   /// @brief Construct with a single packet ID to be requested.
   /// @param id the packet ID to be requested

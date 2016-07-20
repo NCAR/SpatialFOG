@@ -1,8 +1,8 @@
 /*
- * ANPPPacket.h
+ * AnppPacket.h
  *
  *  Created on: Jun 1, 2016
- *      Author: burghart
+ *      Author: Chris Burghart <burghart@ucar.edu>
  */
 
 #ifndef SRC_SPATIALFOG_ANPPPACKET_H_
@@ -17,10 +17,10 @@
 /// @brief Base class for C++ representation of Advanced Navigation Packet
 /// Protocol (ANPP) packets.
 ///
-class ANPPPacket {
+class AnppPacket {
 public:
-  ANPPPacket();
-  virtual ~ANPPPacket();
+  AnppPacket();
+  virtual ~AnppPacket();
   
   /// @brief Return the ANPP header LRC
   /// @return the ANPP header LRC
@@ -114,7 +114,7 @@ public:
   }
   
 protected:
-  friend class ANPPPacketFactory;
+  friend class AnppPacketFactory;
 
   /// @brief Initialize from raw packet data bytes.
   ///
@@ -135,7 +135,7 @@ protected:
   /// @brief Constructor which sets header values.
   /// @param packetId the packet ID
   /// @param packetDataLen the packet non-header data length
-  ANPPPacket(uint8_t packetId, uint8_t packetDataLen);
+  AnppPacket(uint8_t packetId, uint8_t packetDataLen);
 
   /// @brief The fixed length of the ANPP packet header: 5 bytes
   static const uint8_t _HEADER_LEN = 5;

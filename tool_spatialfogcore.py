@@ -9,8 +9,8 @@ env.AppendUnique(CXXFLAGS = ['-std=c++11'])
 
 sources = Split('''
     AckPacket.cpp
-    ANPPPacket.cpp
-    ANPPPacketFactory.cpp
+    AnppPacket.cpp
+    AnppPacketFactory.cpp
     EulerPacket.cpp
     EulerStdDevPacket.cpp
     GenericPacket.cpp
@@ -26,8 +26,8 @@ sources = Split('''
 
 headers = Split('''
     AckPacket.h
-    ANPPPacket.h
-    ANPPPacketFactory.h
+    AnppPacket.h
+    AnppPacketFactory.h
     EulerPacket.h
     EulerStdDevPacket.h
     GenericPacket.h

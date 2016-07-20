@@ -8,9 +8,9 @@
 #ifndef SRC_SPATIALFOG_SYSTEMSTATEPACKET_H_
 #define SRC_SPATIALFOG_SYSTEMSTATEPACKET_H_
 
-#include "ANPPPacket.h"
+#include "AnppPacket.h"
 
-class SystemStatePacket: public ANPPPacket {
+class SystemStatePacket: public AnppPacket {
 public:
   /// @brief Construct from raw packet data bytes
   /// @param raw the raw packet bytes

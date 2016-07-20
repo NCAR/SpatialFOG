@@ -8,9 +8,9 @@
 #ifndef SRC_SPATIALFOG_VELOCITYSTDDEVPACKET_H_
 #define SRC_SPATIALFOG_VELOCITYSTDDEVPACKET_H_
 
-#include "ANPPPacket.h"
+#include "AnppPacket.h"
 
-class VelocityStdDevPacket: public ANPPPacket {
+class VelocityStdDevPacket: public AnppPacket {
 public:
   /// @brief Construct from raw packet data bytes
   /// @param raw the raw packet bytes

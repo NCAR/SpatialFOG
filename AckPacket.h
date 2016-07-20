@@ -10,9 +10,10 @@
 
 #include <cinttypes>
 #include <string>
-#include "ANPPPacket.h"
 
-class AckPacket: public ANPPPacket {
+#include "AnppPacket.h"
+
+class AckPacket: public AnppPacket {
 public:
   /// @brief Construct from the data in rawData, which contains rawLength
   /// usable bytes.

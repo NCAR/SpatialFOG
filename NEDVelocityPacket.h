@@ -8,9 +8,9 @@
 #ifndef SRC_SPATIALFOG_NEDVELOCITYPACKET_H_
 #define SRC_SPATIALFOG_NEDVELOCITYPACKET_H_
 
-#include "ANPPPacket.h"
+#include "AnppPacket.h"
 
-class NEDVelocityPacket: public ANPPPacket {
+class NEDVelocityPacket: public AnppPacket {
 public:
   /// @brief Construct from raw packet data bytes
   /// @param raw the raw packet bytes

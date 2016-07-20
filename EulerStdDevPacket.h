@@ -8,9 +8,9 @@
 #ifndef SRC_SPATIALFOG_EULERSTDDEVPACKET_H_
 #define SRC_SPATIALFOG_EULERSTDDEVPACKET_H_
 
-#include "ANPPPacket.h"
+#include "AnppPacket.h"
 
-class EulerStdDevPacket: public ANPPPacket {
+class EulerStdDevPacket: public AnppPacket {
 public:
   /// @brief Construct from raw packet data bytes
   /// @param raw the raw packet bytes

@@ -1,5 +1,5 @@
 /*
- * ANPPPacket.cpp
+ * AnppPacket.cpp
  *
  *  Created on: Jun 1, 2016
  *      Author: burghart
@@ -11,18 +11,18 @@
 #include <string>
 #include <boost/archive/binary_iarchive.hpp>
 #include <logx/Logging.h>
-#include "ANPPPacket.h"
+#include "AnppPacket.h"
 
-LOGGING("ANPPPacket");
+LOGGING("AnppPacket");
 
 // Latest time of validity received in a System State or Unix Time packet.
-uint32_t ANPPPacket::_LatestTimeOfValiditySeconds = 0;
-uint32_t ANPPPacket::_LatestTimeOfValidityMicroseconds = 0;
+uint32_t AnppPacket::_LatestTimeOfValiditySeconds = 0;
+uint32_t AnppPacket::_LatestTimeOfValidityMicroseconds = 0;
 
-ANPPPacket::BadHeader::~BadHeader() throw () {}
-ANPPPacket::NeedMoreData::~NeedMoreData() throw () {}
+AnppPacket::BadHeader::~BadHeader() throw () {}
+AnppPacket::NeedMoreData::~NeedMoreData() throw () {}
 
-ANPPPacket::ANPPPacket() :
+AnppPacket::AnppPacket() :
     _dataPtr(NULL),
     _timeOfValiditySeconds(0),
     _timeOfValidityMicroseconds(0) {
@@ -32,7 +32,7 @@ ANPPPacket::ANPPPacket() :
     memset(reinterpret_cast<void*>(&_header), 0, sizeof(_header));
 }
 
-ANPPPacket::ANPPPacket(uint8_t packetId, uint8_t packetDataLen) :
+AnppPacket::AnppPacket(uint8_t packetId, uint8_t packetDataLen) :
   _dataPtr(NULL),
   // Use latest time of validity we've received
   _timeOfValiditySeconds(_LatestTimeOfValiditySeconds),
@@ -41,11 +41,11 @@ ANPPPacket::ANPPPacket(uint8_t packetId, uint8_t packetDataLen) :
   _header._packetDataLen = packetDataLen;
 }
 
-ANPPPacket::~ANPPPacket() {
+AnppPacket::~AnppPacket() {
 }
 
 uint8_t
-ANPPPacket::_CalculateLRC(const void * data, int length) {
+AnppPacket::_CalculateLRC(const void * data, int length) {
   const uint8_t *bytes = reinterpret_cast<const uint8_t*>(data);
   uint8_t lrc = 0;
   for (int i = 0; i < length; i++) {
@@ -96,7 +96,7 @@ static const uint16_t CRC16_TABLE[256] =
 };
 
 uint16_t
-ANPPPacket::_CalculateCRC(const void *data, int length)
+AnppPacket::_CalculateCRC(const void *data, int length)
 {
   const uint8_t *bytes = (const uint8_t *) data;
   uint16_t crc = 0xFFFF, i;
@@ -108,7 +108,7 @@ ANPPPacket::_CalculateCRC(const void *data, int length)
 }
 
 void
-ANPPPacket::_initializeFromRaw(const void * rawData, uint32_t rawLength) {
+AnppPacket::_initializeFromRaw(const void * rawData, uint32_t rawLength) {
   const uint8_t * uint8Data = reinterpret_cast<const uint8_t*>(rawData);
 
   // ANPP packets contain little-endian data, and much of the implementation
@@ -170,7 +170,7 @@ ANPPPacket::_initializeFromRaw(const void * rawData, uint32_t rawLength) {
 }
 
 void
-ANPPPacket::_updateHeader() {
+AnppPacket::_updateHeader() {
   // Do the CRC first, since the CRC itself goes into the calculation of 
   // LRC below.
   _header._packetDataCRC = _dataPtr ? _CalculateCRC(_dataPtr, packetDataLen()) : 0;
@@ -181,12 +181,12 @@ ANPPPacket::_updateHeader() {
 }
 
 bool
-ANPPPacket::crcIsGood() const {
+AnppPacket::crcIsGood() const {
     return(crcFromHeader() == _CalculateCRC(_dataPtr, packetDataLen()));
 }
 
 std::vector<uint8_t>
-ANPPPacket::rawBytes() const {
+AnppPacket::rawBytes() const {
     std::vector<uint8_t> rawVec;
 
     // Copy the header into rawVec

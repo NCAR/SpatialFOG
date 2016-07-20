@@ -13,7 +13,7 @@
 LOGGING("RequestPacket")
 
 RequestPacket::RequestPacket(uint8_t id) :
-  ANPPPacket(_PACKET_ID, 1) {
+  AnppPacket(_PACKET_ID, 1) {
   // Our list of requested packet IDs has only one element
   _nRequestedPacketIds = 1;
   _requestedPacketIds[0] = id;
@@ -26,7 +26,7 @@ RequestPacket::RequestPacket(uint8_t id) :
 }
 
 RequestPacket::RequestPacket(std::vector<uint8_t> idList) :
-  ANPPPacket(_PACKET_ID, idList.size()) {
+  AnppPacket(_PACKET_ID, idList.size()) {
   // It's a problem if they request more that 255 packet ids...
   assert(idList.size() <= 255);
 

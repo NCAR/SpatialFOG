@@ -8,9 +8,9 @@
 #ifndef SRC_SPATIALFOG_GENERICPACKET_H_
 #define SRC_SPATIALFOG_GENERICPACKET_H_
 
-#include "ANPPPacket.h"
+#include "AnppPacket.h"
 
-class GenericPacket: public ANPPPacket {
+class GenericPacket: public AnppPacket {
 public:
     GenericPacket(const void* raw, uint32_t length);
     virtual ~GenericPacket();

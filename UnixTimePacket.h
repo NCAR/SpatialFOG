@@ -8,9 +8,9 @@
 #ifndef SRC_SPATIALFOG_UNIXTIMEPACKET_H_
 #define SRC_SPATIALFOG_UNIXTIMEPACKET_H_
 
-#include "ANPPPacket.h"
+#include "AnppPacket.h"
 
-class UnixTimePacket: public ANPPPacket {
+class UnixTimePacket: public AnppPacket {
 public:
   /// @brief Instantiate from raw ANPP packet data.
   /// @param raw pointer to the raw packet data

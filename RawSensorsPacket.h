@@ -8,9 +8,9 @@
 #ifndef SRC_SPATIALFOG_RAWSENSORSPACKET_H_
 #define SRC_SPATIALFOG_RAWSENSORSPACKET_H_
 
-#include "ANPPPacket.h"
+#include "AnppPacket.h"
 
-class RawSensorsPacket: public ANPPPacket {
+class RawSensorsPacket: public AnppPacket {
 public:
   /// @brief Construct from raw packet data bytes
   /// @param raw the raw packet bytes

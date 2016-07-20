@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <sstream>
 #include <logx/Logging.h>
+#include "AnppPacketFactory.h"
 #include "AckPacket.h"
 #include "EulerPacket.h"
 #include "EulerStdDevPacket.h"
@@ -18,22 +19,21 @@
 #include "SystemStatePacket.h"
 #include "UnixTimePacket.h"
 #include "VelocityStdDevPacket.h"
-#include "ANPPPacketFactory.h"
 
-LOGGING("ANPPPacketFactory")
+LOGGING("AnppPacketFactory")
 
 // Pointer to our singleton instance, which is instantiated at first use.
-ANPPPacketFactory * ANPPPacketFactory::_instancePtr = 0;
+AnppPacketFactory * AnppPacketFactory::_instancePtr = 0;
 
-ANPPPacketFactory::ANPPPacketFactory() {
+AnppPacketFactory::AnppPacketFactory() {
 }
 
-ANPPPacketFactory::~ANPPPacketFactory() {
+AnppPacketFactory::~AnppPacketFactory() {
 }
 
-ANPPPacket*
-ANPPPacketFactory::constructANPPPacket(const uint8_t * raw, uint len) const {
-  // Construct a non-specialized ANPPPacket first, just to get access to the
+AnppPacket*
+AnppPacketFactory::constructAnppPacket(const uint8_t * raw, uint len) const {
+  // Construct a non-specialized AnppPacket first, just to get access to the
   // packet ID.
   GenericPacket * gPacket = new GenericPacket(raw, len);
   int packetId = gPacket->packetId();
