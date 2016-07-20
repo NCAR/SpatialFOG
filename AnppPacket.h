@@ -46,6 +46,10 @@ public:
   /// recorded in the packet header.
   uint16_t crcFromHeader() const { return(_header._packetDataCRC); }
   
+  /// @brief Return the CRC calculated directly from the data portion of the
+  /// packet.
+  uint16_t crcOfData() const { return(_CalculateCRC(_dataPtr, packetDataLen())); }
+
   /// @brief Return the time of validity for the packet, in whole seconds since
   /// 1970-01-01 00:00:00 UTC.
   /// @return the time of validity for the packet, in whole seconds since
@@ -70,7 +74,7 @@ public:
 
   /// @brief Return true iff the CRC recorded in the header matches the CRC
   /// calculated for the data portion of the packet.
-  bool crcIsGood() const;
+  bool crcIsGood() const { return(crcFromHeader() == crcOfData()); }
 
   /// @brief Return the raw ANPP representation of the packet, as a std::vector
   /// of uint8_t.

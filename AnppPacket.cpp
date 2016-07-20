@@ -130,19 +130,8 @@ AnppPacket::_initializeFromRaw(const void * rawData, uint32_t rawLength) {
     throw NeedMoreData(oss.str());
   }
 
-  // Assign the latest time of validity we received as this packet's time
+  // Assign the latest "time of validity" we received as this packet's time
   _setTimeOfValidity();
-
-  // Corner case: An all-zero header will give a valid LRC, but is not really
-  // a valid packet header, because all valid packets have a non-zero data
-  // length. Throw BadHeader in this case.
-  uint headerSum = 0;
-  for (int i = 0; i < _HEADER_LEN; i++) {
-      headerSum += uint8Data[i];
-  }
-  if (headerSum == 0) {
-      throw BadHeader("All-zero header");
-  }
 
   // Copy the 5-byte header into our header struct
   memcpy(&_header, rawData, _HEADER_LEN);
@@ -178,11 +167,6 @@ AnppPacket::_updateHeader() {
   // Now calculate the header LRC from the last four bytes of the header.
   _header._headerLRC = 
       _CalculateLRC(reinterpret_cast<const uint8_t*>(&_header) + 1, 4);
-}
-
-bool
-AnppPacket::crcIsGood() const {
-    return(crcFromHeader() == _CalculateCRC(_dataPtr, packetDataLen()));
 }
 
 std::vector<uint8_t>
