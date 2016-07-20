@@ -32,55 +32,78 @@ AnppPacketFactory::~AnppPacketFactory() {
 }
 
 AnppPacket*
-AnppPacketFactory::constructAnppPacket(const uint8_t * raw, uint len) const {
+AnppPacketFactory::ConstructAnppPacket(const uint8_t * raw, uint len) {
+    return(instance()._constructAnppPacket(raw, len));
+}
+
+AnppPacket*
+AnppPacketFactory::_constructAnppPacket(const uint8_t * raw, uint len) const {
   // Construct a non-specialized AnppPacket first, just to get access to the
   // packet ID.
-  GenericPacket * gPacket = new GenericPacket(raw, len);
-  int packetId = gPacket->packetId();
-  delete gPacket;
+  AnppPacket * pkt = new GenericPacket(raw, len);
+  int packetId = pkt->packetId();
+  delete pkt;
+  pkt = NULL;
 
   // Construct the appropriate specialized packet class based on the packet ID
   switch(packetId) {
     // Acknowledge packet data -> AckPacket instance
     case 0:
-      DLOG << "Constructing an AckPacket";
-      return new AckPacket(raw, len);
+      pkt = new AckPacket(raw, len);
+      DLOG << "Constructed an AckPacket";
+      break;
     // System State packet data -> SystemStatePacket instance
     case 20:
-      DLOG << "Constructing a SystemStatePacket";
-      return new SystemStatePacket(raw, len);
+      pkt = new SystemStatePacket(raw, len);
+      DLOG << "Constructed a SystemStatePacket";
+      break;
     // Unix Time packet data -> UnixTimePacket instance
     case 21:
-      DLOG << "Constructing a UnixTimePacket";
-      return new UnixTimePacket(raw, len);
+      pkt = new UnixTimePacket(raw, len);
+      DLOG << "Constructed a UnixTimePacket";
+      break;
     // Velocity Standard Deviation packet data -> VelocityStdDevPacket instance
     case 25:
-      DLOG << "Constructing a VelocityStdDevPacket";
-      return new VelocityStdDevPacket(raw, len);
+      pkt = new VelocityStdDevPacket(raw, len);
+      DLOG << "Constructed a VelocityStdDevPacket";
+      break;
     // Euler Orientation Standard Deviation packet data -> EulerStdDevPacket
     // instance
     case 26:
-      DLOG << "Constructing an EulerStdDevPacket";
-      return new EulerStdDevPacket(raw, len);
+      pkt = new EulerStdDevPacket(raw, len);
+      DLOG << "Constructed an EulerStdDevPacket";
+      break;
     // Raw Sensors packet data -> RawSensorsPacket instance
     case 28:
-      DLOG << "Constructing a RawSensorsPacket";
-      return new RawSensorsPacket(raw, len);
+      pkt = new RawSensorsPacket(raw, len);
+      DLOG << "Constructed a RawSensorsPacket";
+      break;
     // Satellites packet data -> SatellitesPacket instance
     case 30:
-      DLOG << "Constructing a SatellitesPacket";
-      return new SatellitesPacket(raw, len);
+      pkt = new SatellitesPacket(raw, len);
+      DLOG << "Constructed a SatellitesPacket";
+      break;
     // NED Velocity packet data -> NEDVelocityPacket instance
     case 35:
-      DLOG << "Constructing a NEDVelocityPacket";
-      return new NEDVelocityPacket(raw, len);
+      pkt = new NEDVelocityPacket(raw, len);
+      DLOG << "Constructed a NEDVelocityPacket";
+      break;
     // Euler Orientation packet data -> EulerPacket instance
     case 39:
-      DLOG << "Constructing an EulerPacket";
-      return new EulerPacket(raw, len);
+      pkt = new EulerPacket(raw, len);
+      DLOG << "Constructed an EulerPacket";
+      break;
     // For other IDs, create an unspecialized instance
     default:
-      DLOG << "Constructing a GenericPacket (id " << packetId << ")";
-      return new GenericPacket(raw, len);
+      pkt = new GenericPacket(raw, len);
+      DLOG << "Constructed a GenericPacket (id " << packetId << ")";
+      break;
   }
+
+  if (! pkt->crcIsGood()) {
+      WLOG << "AnppPacket with id " << pkt->packetId() <<
+              ": CRC in header (0x" << std::hex << pkt->crcFromHeader() <<
+              ") != CRC of data (0x" << std::hex << pkt->crcOfData() << ")";
+  }
+  return pkt;
 }

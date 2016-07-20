@@ -16,7 +16,7 @@
 class AnppPacketFactory {
 public:
   virtual ~AnppPacketFactory();
-  
+
   /// @brief Get the singleton AnppPacketFactory instance.
   /// @return the singleton AnppPacketFactory instance.
   static AnppPacketFactory & instance() {
@@ -25,9 +25,9 @@ public:
     }
     return (*_instancePtr);
   }
-  
+
   /// @brief Return a new AnppPacket instance created from the given raw packet
-  /// bytes.
+  /// bytes if possible, otherwise throw an exception.
   ///
   /// The caller is responsible for deleting the returned instance.
   /// @param raw pointer to raw packet bytes from which the AnppPacket object
@@ -35,7 +35,19 @@ public:
   /// @param len the number of bytes available in raw
   /// @return a new AnppPacket instance created from the given raw packet bytes.
   /// @throws AnppPacket::BadPacketData
-  AnppPacket * constructAnppPacket(const uint8_t * raw, uint32_t len) const;
+  static AnppPacket * ConstructAnppPacket(const uint8_t * raw, uint32_t len);
+
+protected:
+  /// @brief Return a new AnppPacket instance created from the given raw packet
+  /// bytes if possible, otherwise throw an exception.
+  ///
+  /// The caller is responsible for deleting the returned instance.
+  /// @param raw pointer to raw packet bytes from which the AnppPacket object
+  /// is to be constructed.
+  /// @param len the number of bytes available in raw
+  /// @return a new AnppPacket instance created from the given raw packet bytes.
+  /// @throws AnppPacket::BadPacketData
+  AnppPacket * _constructAnppPacket(const uint8_t * raw, uint32_t len) const;
 
 private:
   /// @brief Pointer to the singleton instance
