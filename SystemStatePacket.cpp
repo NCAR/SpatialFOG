@@ -24,6 +24,14 @@ SystemStatePacket::SystemStatePacket(const void* raw, uint length) {
   // Initialize from the raw data
   _initializeFromRaw(raw, length);
 
+  // Validate the packet data length
+  if (packetDataLen() != _PACKET_DATA_LEN) {
+      std::ostringstream oss;
+      oss << "Packet data length " << packetDataLen() <<
+             " is invalid for SystemStatePacket";
+      throw BadHeader(oss.str());
+  }
+
   // Reset our own time of validity to the time contained in this packet.
   // We must overwrite the time set by _initializeFromRaw(), which used the
   // latest *previous* "time of validity" values.

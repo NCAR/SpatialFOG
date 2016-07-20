@@ -22,6 +22,14 @@ VelocityStdDevPacket::VelocityStdDevPacket(const void* raw, uint length) {
 
   // Initialize from the raw data
   _initializeFromRaw(raw, length);
+
+  // Validate the packet data length
+  if (packetDataLen() != _PACKET_DATA_LEN) {
+      std::ostringstream oss;
+      oss << "Packet data length " << packetDataLen() <<
+             " is invalid for VelocityStdDevPacket";
+      throw BadHeader(oss.str());
+  }
 }
 
 VelocityStdDevPacket::~VelocityStdDevPacket() {

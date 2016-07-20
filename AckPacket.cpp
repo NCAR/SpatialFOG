@@ -34,6 +34,14 @@ AckPacket::AckPacket(const void* raw, uint length) {
   // Initialize from the raw data
   _initializeFromRaw(raw, length);
 
+  // Validate the packet data length
+  if (packetDataLen() != _PACKET_DATA_LEN) {
+      std::ostringstream oss;
+      oss << "Packet data length " << packetDataLen() <<
+             " is invalid for AckPacket";
+      throw BadHeader(oss.str());
+  }
+
   DLOG << "Acknowledgment packet - For pkt ID " << uint(ackedPacketId()) <<
           ": " << ackResultString();
 }

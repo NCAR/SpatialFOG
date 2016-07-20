@@ -24,6 +24,14 @@ EulerPacket::EulerPacket(const void* raw, uint length) {
   // Initialize from the raw data
   _initializeFromRaw(raw, length);
 
+  // Validate the packet data length
+  if (packetDataLen() != _PACKET_DATA_LEN) {
+      std::ostringstream oss;
+      oss << "Packet data length " << packetDataLen() <<
+             " is invalid for EulerPacket";
+      throw BadHeader(oss.str());
+  }
+
   DLOG << "Euler packet - pitch: " << 180.0 * (_data._pitch / M_PI) <<
           ", roll: " << 180.0 * (_data._roll / M_PI) <<
           ", heading: " << 180.0 * (_data._heading / M_PI);

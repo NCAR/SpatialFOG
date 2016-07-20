@@ -23,6 +23,14 @@ SatellitesPacket::SatellitesPacket(const void* raw, uint length) {
   // Initialize from the raw data
   _initializeFromRaw(raw, length);
 
+  // Validate the packet data length
+  if (packetDataLen() != _PACKET_DATA_LEN) {
+      std::ostringstream oss;
+      oss << "Packet data length " << packetDataLen() <<
+             " is invalid for SatellitesPacket";
+      throw BadHeader(oss.str());
+  }
+
   DLOG << "Satellites packet - GPS: " << uint(_data._nGps) <<
           ", SBAS: " << uint(_data._nSbas) <<
           ", GLONASS: " << uint(_data._nGlonass) <<
