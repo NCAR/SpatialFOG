@@ -8,6 +8,7 @@
 #ifndef SRC_SPATIALFOG_SYSTEMSTATEPACKET_H_
 #define SRC_SPATIALFOG_SYSTEMSTATEPACKET_H_
 
+#include <cmath>
 #include "AnppPacket.h"
 
 class SystemStatePacket: public AnppPacket {
@@ -18,7 +19,45 @@ public:
   SystemStatePacket(const void* raw, uint length);
 
   virtual ~SystemStatePacket();
-  
+
+  /// @brief Return system status bits. See the Advanced Navigation Packet
+  /// Protocol documentation for details.
+  /// @return system status bits
+  uint16_t systemStatus() const { return(_data._systemStatus); }
+
+  /// @brief Return filter status bits. See the Advanced Navigation Packet
+  /// Protocol documentation for details.
+  /// @return filter status bits
+  uint16_t filterStatus() const { return(_data._filterStatus); }
+
+  /// @brief Return latitude, in deg
+  /// @return latitude, in deg
+  float latitude() const { return(_RadToDeg(_data._latitude)); }
+
+  /// @brief Return longitude, in deg
+  /// @return longitude, in deg
+  float longitude() const { return(_RadToDeg(_data._longitude)); }
+
+  /// @brief Return the altitude above MSL, in m
+  /// @return the altitude above MSL, in m
+  float altitude() const { return(_data._height); }
+
+  /// @brief Return the velocity north, in m/s
+  /// @return the velocity north, in m/s
+  float velocityNorth() const { return(_data._velNorth); }
+
+  /// @brief Return the velocity east, in m/s
+  /// @return the velocity east, in m/s
+  float velocityEast() const { return(_data._velEast); }
+
+  /// @brief Return the velocity down, in m/s
+  /// @return the velocity down, in m/s
+  float velocityDown() const { return(_data._velDown); }
+
+  /// @brief Return the velocity up, in m/s
+  /// @return the velocity up, in m/s
+  float velocityUp() const { return(-1 * velocityDown()); }
+
 protected:
   /// @brief ANPP packet id for this packet type
   static const uint8_t _PACKET_ID = 20;
