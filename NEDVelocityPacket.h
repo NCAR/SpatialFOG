@@ -18,6 +18,23 @@ public:
   NEDVelocityPacket(const void* raw, uint length);
 
   virtual ~NEDVelocityPacket();
+
+  /// @brief Return the velocity north, in m/s
+  /// @return the velocity north, in m/s
+  float velocityNorth() const { return(_data._velocityNorth); }
+
+  /// @brief Return the velocity east, in m/s
+  /// @return the velocity east, in m/s
+  float velocityEast() const { return(_data._velocityEast); }
+
+  /// @brief Return the velocity down, in m/s
+  /// @return the velocity down, in m/s
+  float velocityDown() const { return(_data._velocityDown); }
+
+  /// @brief Return the velocity up, in m/s
+  /// @return the velocity up, in m/s
+  float velocityUp() const { return(-1 * velocityDown()); }
+
 protected:
   /// @brief ANPP packet id for this packet type
   static const uint8_t _PACKET_ID = 35;
