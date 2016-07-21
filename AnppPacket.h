@@ -8,8 +8,9 @@
 #ifndef SRC_SPATIALFOG_ANPPPACKET_H_
 #define SRC_SPATIALFOG_ANPPPACKET_H_
 
-#include <stdint.h>
+#include <cmath>
 #include <exception>
+#include <stdint.h>
 #include <string>
 #include <vector>
 
@@ -182,6 +183,12 @@ protected:
   /// packet. The size of the memory pointed to must be at least packetDataLen()
   /// bytes.
   uint8_t * _dataPtr;
+
+  /// @brief Return the value in degrees equivalent to the given value in
+  /// radians.
+  /// @param valRad the value in radians to be converted
+  /// @return the value in degrees equivalent to the given value in radians.
+  static double _RadToDeg(double radVal) { return((radVal / M_PI) * 180.0); }
 
 private:
   /// @brief Calculate and return the ISO 1155 Longitudinal Redundancy Check
