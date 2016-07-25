@@ -58,6 +58,18 @@ public:
   /// @return the velocity up, in m/s
   float velocityUp() const { return(-1 * velocityDown()); }
 
+  /// @brief Return the roll, in degrees
+  /// @return the roll, in degrees
+  float roll() const { return(_RadToDeg(_data._roll)); }
+
+  /// @brief Return the pitch, in degrees
+  /// @return the pitch, in degrees
+  float pitch() const { return(_RadToDeg(_data._pitch)); }
+
+  /// @brief Return the heading, in degrees
+  /// @return the heading, in degrees
+  float heading() const { return(_RadToDeg(_data._heading)); }
+
 protected:
   /// @brief ANPP packet id for this packet type
   static const uint8_t _PACKET_ID = 20;
