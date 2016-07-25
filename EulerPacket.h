@@ -21,15 +21,15 @@ public:
 
   /// @brief Return the roll, in degrees
   /// @return the roll, in degrees
-  float roll() const { return(_data._roll); }
+  float roll() const { return(_RadToDeg(_data._roll)); }
 
   /// @brief Return the pitch, in degrees
   /// @return the pitch, in degrees
-  float pitch() const { return(_data._pitch); }
+  float pitch() const { return(_RadToDeg(_data._pitch)); }
 
   /// @brief Return the heading, in degrees
   /// @return the heading, in degrees
-  float heading() const { return(_data._heading); }
+  float heading() const { return(_RadToDeg(_data._heading)); }
 
 protected:
   /// @brief ANPP packet id for this packet type
