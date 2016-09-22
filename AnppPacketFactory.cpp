@@ -9,16 +9,6 @@
 #include <sstream>
 #include <logx/Logging.h>
 #include "AnppPacketFactory.h"
-#include "AckPacket.h"
-#include "EulerPacket.h"
-#include "EulerStdDevPacket.h"
-#include "GenericPacket.h"
-#include "NEDVelocityPacket.h"
-#include "RawSensorsPacket.h"
-#include "SatellitesPacket.h"
-#include "SystemStatePacket.h"
-#include "UnixTimePacket.h"
-#include "VelocityStdDevPacket.h"
 
 LOGGING("AnppPacketFactory")
 
