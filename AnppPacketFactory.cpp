@@ -73,6 +73,11 @@ AnppPacketFactory::_constructAnppPacket(const uint8_t * raw, uint len) const {
       pkt = new SatellitesPacket(raw, len);
       DLOG << "Constructed a SatellitesPacket";
       break;
+    // Detailed Satellites packet data -> DetailedSatellitesPacket instance
+    case 31:
+      pkt = new DetailedSatellitesPacket(raw, len);
+      DLOG << "Constructed a DetailedSatellitesPacket";
+      break;
     // NED Velocity packet data -> NEDVelocityPacket instance
     case 35:
       pkt = new NEDVelocityPacket(raw, len);
