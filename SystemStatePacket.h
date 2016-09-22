@@ -30,6 +30,52 @@ public:
   /// @return filter status bits
   uint16_t filterStatus() const { return(_data._filterStatus); }
 
+  /// @brief Return true iff the "orientation filter initialized" bit is set
+  /// @return true iff the "orientation filter initialized" bit is set
+  bool orientationFilterInitialized() const {
+      return(((_data._filterStatus >> 0) & 0x1) == 1);
+  }
+
+  /// @brief Return true iff the "navigation filter initialized" bit is set
+  /// @return true iff the "navigation filter initialized" bit is set
+  bool navigationFilterInitialized() const {
+      return(((_data._filterStatus >> 1) & 0x1) == 1);
+  }
+
+  /// @brief Return true iff the "heading initialized" bit is set
+  /// @return true iff the "heading initialized" bit is set
+  bool headingInitialized() const {
+      return(((_data._filterStatus >> 2) & 0x1) == 1);
+  }
+
+  /// @brief Return true iff the "UTC time initialized" bit is set
+  /// @return true iff the "UTC time initialized" bit is set
+  bool utcTimeInitialized() const {
+      return(((_data._filterStatus >> 3) & 0x1) == 1);
+  }
+
+  /// @brief Return the numeric GNSS fix status (0-7)
+  /// @return the numeric GNSS fix status (0-7)
+  uint8_t gnssFixStatus() const {
+      return(uint8_t((_data._filterStatus >> 4) & 0x7));
+  }
+
+  /// @brief Return a string describing the current GNSS fix state
+  /// @return a string describing the current GNSS fix state
+  std::string gnssFixString() const {
+      static std::string stateStrings[] = {
+              "None",                   // 0
+              "2D",                     // 1
+              "3D",                     // 2
+              "SBAS",                   // 3
+              "Differential",           // 4
+              "Omnistar/Starfire",      // 5
+              "RTK Float",              // 6
+              "RTK Fixed"               // 7
+      };
+      return(stateStrings[gnssFixStatus()]);
+  }
+
   /// @brief Return latitude, in deg
   /// @return latitude, in deg
   float latitude() const { return(_RadToDeg(_data._latitude)); }

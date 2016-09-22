@@ -17,6 +17,21 @@ public:
   /// @param length the number of bytes available in raw
   SatellitesPacket(const void* raw, uint length);
 
+  /// @brief Return the number of GPS satellites tracked
+  int nGps() const { return(_data._nGps); }
+
+  /// @brief Return the number of GLONASS satellites tracked
+  int nGlonass() const { return(_data._nGlonass); }
+
+  /// @brief Return the number of BeiDou satellites tracked
+  int nBeiDou() const { return(_data._nBeiDou); }
+
+  /// @brief Return the number of Galileo satellites tracked
+  int nGalileo() const { return(_data._nGalileo); }
+
+  /// @brief Return the number of SBAS satellites tracked
+  int nSbas() const { return(_data._nSbas); }
+
   virtual ~SatellitesPacket();
 protected:
   /// @brief ANPP packet id for this packet type
