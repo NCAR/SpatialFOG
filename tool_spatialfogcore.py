@@ -50,11 +50,12 @@ Default(lib)
 # doxref = env.Apidocs(sources + headers)
 # Default(doxref)
 
-# progEnv = env.Clone()
-# progEnv.Append(LIBS=[lib])
-# progEnv.Require(tools)
-# fooProg = progEnv.Program('foo', ['foo.cpp'])
-# Default(fooProg)
+progEnv = env.Clone()
+progEnv.Append(LIBS=[lib])
+progEnv.Require('qt4')  # we need some Qt classes for AnppFileDump
+progEnv.EnableQt4Modules(['QtCore'])
+AnppFileDump = progEnv.Program('AnppFileDump', ['AnppFileDump.cpp'])
+Default(AnppFileDump)
 
 def spatialfogcore(env):
     env.AppendUnique(CPPPATH = thisDir)
