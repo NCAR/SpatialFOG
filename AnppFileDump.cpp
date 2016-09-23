@@ -168,47 +168,29 @@ boolChar(bool state) {
 
 void
 doSystemStatePacket(const SystemStatePacket & ssPkt) {
-    static bool bitHeaderPrinted = false;
-
-    // Print a header
-    if (! bitHeaderPrinted) {
-        std::cout << std::endl;
-        std::cout <<
-                "                        ,---- UTC time initialized" <<
-                std::endl;
-        std::cout <<
-                "                        |,--- heading initialized" <<
-                std::endl;
-        std::cout <<
-                "                        ||,-- navigation filter initialized" <<
-                std::endl;
-        std::cout <<
-                "                        |||,- orientation filter initialized" <<
-                std::endl;
-        bitHeaderPrinted = true;
-    }
-
     // packet time
     QDateTime pktTime = QDateTime::fromTime_t(ssPkt.timeOfValiditySeconds())
-                        .toUTC()
-                        .addMSecs(ssPkt.timeOfValidityMicroseconds() / 1000);
+                        .addMSecs(ssPkt.timeOfValidityMicroseconds() / 1000)
+                        .toUTC();
     std::cout << pktTime.toString("yyyy/MM/dd hh:mm:ss.zzz ").toStdString();
+    std::cout << "System State - ";
 
     // initialization bits
-    std::cout << boolChar(ssPkt.utcTimeInitialized());
-    std::cout << boolChar(ssPkt.headingInitialized());
-    std::cout << boolChar(ssPkt.navigationFilterInitialized());
-    std::cout << boolChar(ssPkt.orientationFilterInitialized());
+    std::cout << "init: ";
+    std::cout << (ssPkt.utcTimeInitialized() ? "T" : "-");
+    std::cout << (ssPkt.headingInitialized() ? "H" : "-");
+    std::cout << (ssPkt.navigationFilterInitialized() ? "N" : "-");
+    std::cout << (ssPkt.orientationFilterInitialized() ? "O" : "-");
 
     // GNSS fix
-    std::cout << "  fix: " << ssPkt.gnssFixString();
+    std::cout << ", fix: " << ssPkt.gnssFixString();
         
     // last pitch and roll
     std::cout << ", pitch: " <<
-            std::fixed << std::setprecision(5) << std::setw(7) <<
+            std::fixed << std::setprecision(2) <<
             ssPkt.pitch();
     std::cout << ", roll: " <<
-            std::fixed << std::setprecision(5) << std::setw(7) <<
+            std::fixed << std::setprecision(2) <<
             ssPkt.roll();
 
     std::cout << std::endl;
@@ -218,15 +200,16 @@ void
 doSatellitesPacket(const SatellitesPacket & pkt) {
     // packet time
     QDateTime pktTime = QDateTime::fromTime_t(pkt.timeOfValiditySeconds())
-                        .toUTC()
-                        .addMSecs(pkt.timeOfValidityMicroseconds() / 1000);
+                        .addMSecs(pkt.timeOfValidityMicroseconds() / 1000)
+                        .toUTC();
     std::cout << pktTime.toString("yyyy/MM/dd hh:mm:ss.zzz ").toStdString();
+    std::cout << "Satellites - ";
 
     // satellites seen
     std::cout << "GPS: " << pkt.nGps() <<
-                 " GLONASS: " << pkt.nGlonass() <<
-                 " BeiDou: " << pkt.nBeiDou() <<
-                 " Galileo: " << pkt.nGalileo() <<
+                 ", GLONASS: " << pkt.nGlonass() <<
+                 ", BeiDou: " << pkt.nBeiDou() <<
+                 ", Galileo: " << pkt.nGalileo() <<
                  " SBAS: " << pkt.nSbas() <<
                  std::endl;
 }
@@ -237,9 +220,10 @@ doDetailedSatellitesPacket(const DetailedSatellitesPacket & pkt) {
 
     // packet time
     QDateTime pktTime = QDateTime::fromTime_t(pkt.timeOfValiditySeconds())
-                        .toUTC()
-                        .addMSecs(pkt.timeOfValidityMicroseconds() / 1000);
+                        .addMSecs(pkt.timeOfValidityMicroseconds() / 1000)
+                        .toUTC();
     std::cout << pktTime.toString("yyyy/MM/dd hh:mm:ss.zzz ").toStdString();
+    std::cout << "Detailed Satellites - ";
 
     // SNR stats
     int snrMax = -99;
@@ -254,7 +238,7 @@ doDetailedSatellitesPacket(const DetailedSatellitesPacket & pkt) {
     float snrMean = (nSatellites > 0) ? snrSum / nSatellites : -99.0;
 
     // overall info
-    std::cout << "Tracking " << nSatellites << " satellites, SNR max: " <<
+    std::cout << "tracking " << nSatellites << ", SNR max: " <<
             snrMax << ", SNR mean: " << snrMean << std::endl;
 
 //    // per-satellite info
