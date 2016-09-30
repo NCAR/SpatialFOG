@@ -78,15 +78,15 @@ public:
 
   /// @brief Return latitude, in deg
   /// @return latitude, in deg
-  float latitude() const { return(_RadToDeg(_data._latitude)); }
+  double latitude() const { return(_RadToDeg(_data._latitude)); }
 
   /// @brief Return longitude, in deg
   /// @return longitude, in deg
-  float longitude() const { return(_RadToDeg(_data._longitude)); }
+  double longitude() const { return(_RadToDeg(_data._longitude)); }
 
   /// @brief Return the altitude above MSL, in m
   /// @return the altitude above MSL, in m
-  float altitude() const { return(_data._height); }
+  double altitude() const { return(_data._height); }
 
   /// @brief Return the velocity north, in m/s
   /// @return the velocity north, in m/s

@@ -15,9 +15,10 @@
 
 LOGGING("AnppPacket");
 
-// Latest time of validity received in a System State or Unix Time packet.
-uint32_t AnppPacket::_LatestTimeOfValiditySeconds = 0;
-uint32_t AnppPacket::_LatestTimeOfValidityMicroseconds = 0;
+// Time of validity for the current packet sequence
+uint8_t AnppPacket::_IdOfLastPacket = 255;
+uint32_t AnppPacket::_SequenceTimeOfValiditySeconds = 0;
+uint32_t AnppPacket::_SequenceTimeOfValidityMicroseconds = 0;
 
 AnppPacket::BadHeader::~BadHeader() throw () {}
 AnppPacket::NeedMoreData::~NeedMoreData() throw () {}
@@ -33,12 +34,25 @@ AnppPacket::AnppPacket() :
 }
 
 AnppPacket::AnppPacket(uint8_t packetId, uint8_t packetDataLen) :
-  _dataPtr(NULL),
-  // Use latest time of validity we've received
-  _timeOfValiditySeconds(_LatestTimeOfValiditySeconds),
-  _timeOfValidityMicroseconds(_LatestTimeOfValidityMicroseconds) {
+  _dataPtr(NULL) {
+  // If this is the start of a new packet sequence (i.e., if the packet ID is
+  // less than or equal to that of the last packet seen), reset the time of
+  // validity which will apply to this sequence. The time of validity for the
+  // sequence is undefined until a "System State", "Unix Time", or
+  // "Formatted Time" packet is seen in the sequence.
+  if (packetId <= _IdOfLastPacket) {
+      _SetSequenceTimeOfValidity(0, 0);
+  }
+
+  // Set time of validity for this packet
+  _setTimeOfValidity();
+
+  // Store the packet ID and packet data length in the header
   _header._packetId = packetId;
   _header._packetDataLen = packetDataLen;
+
+  // Save the ID of the last constructed packet
+  _IdOfLastPacket = packetId;
 }
 
 AnppPacket::~AnppPacket() {

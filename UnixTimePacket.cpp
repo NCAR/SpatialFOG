@@ -32,14 +32,13 @@ UnixTimePacket::UnixTimePacket(const void* raw, uint length) {
       throw BadHeader(oss.str());
   }
 
-  // Reset our own time of validity to the time contained in this packet.
-  // We must overwrite the time set by _initializeFromRaw(), which used the
-  // latest *previous* "time of validity" values.
-  _setTimeOfValidity(_data._unixTimeSeconds, _data._microseconds);
-
   // Time of validity supplied in this packet applies to succeeding packets
   // as well. Save it in the static common location.
-  _SetLatestTimeOfValidity(_data._unixTimeSeconds, _data._microseconds);
+  _SetSequenceTimeOfValidity(_data._unixTimeSeconds, _data._microseconds);
+
+  // Reset our own time of validity to the new time of validity for the
+  // packet sequence.
+  _setTimeOfValidity();
 
   // Lots of hoo-hah to get a string representation of time for our DLOG
   // message below...

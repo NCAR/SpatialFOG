@@ -160,23 +160,30 @@ protected:
     _timeOfValidityMicroseconds = microseconds;
   }
 
-  /// @brief Set the object's time of validity to the latest time of validity
-  /// received from the Spatial FOG
+  /// @brief Set the object's time of validity to that of the current packet
+  /// sequence.
   void _setTimeOfValidity() {
-    _timeOfValiditySeconds = _LatestTimeOfValiditySeconds;
-    _timeOfValidityMicroseconds = _LatestTimeOfValidityMicroseconds;
+    _timeOfValiditySeconds = _SequenceTimeOfValiditySeconds;
+    _timeOfValidityMicroseconds = _SequenceTimeOfValidityMicroseconds;
   }
+
+  /// @brief Packet ID for the last AnppPacket which was constructed.
+  ///
+  /// A new packet ID less than or equal to the last packet constructed
+  /// marks the beginning of a "packet sequence", with packets in the sequence
+  /// sharing the same time of validity.
+  static uint8_t _IdOfLastPacket;
 
   /// @brief Store the latest time of validity received from the SpatialFOG, in
   /// Unix time format. This time is sent in both System State and Unix Time 
   /// packets, and applies to all packets delivered in the same packet sequence.
   /// (See the Spatial FOG Reference Manual, section 13.6-Packet Timing.)
-  static uint32_t _LatestTimeOfValiditySeconds;
-  static uint32_t _LatestTimeOfValidityMicroseconds;
-  static void _SetLatestTimeOfValidity(uint32_t unixSeconds,
+  static uint32_t _SequenceTimeOfValiditySeconds;
+  static uint32_t _SequenceTimeOfValidityMicroseconds;
+  static void _SetSequenceTimeOfValidity(uint32_t unixSeconds,
                                        uint32_t microseconds) {
-    _LatestTimeOfValiditySeconds = unixSeconds;
-    _LatestTimeOfValidityMicroseconds = microseconds;
+    _SequenceTimeOfValiditySeconds = unixSeconds;
+    _SequenceTimeOfValidityMicroseconds = microseconds;
   }
 
   /// @brief Pointer to memory holding the non-header data contents of the
@@ -219,7 +226,7 @@ private:
     uint16_t _packetDataCRC;
   } _header;
   #pragma pack(pop)     // resume default struct padding
-  
+
   /// @brief Time of validity for the packet.
   ///
   /// This time is not sent with every packet, but is taken from the last
