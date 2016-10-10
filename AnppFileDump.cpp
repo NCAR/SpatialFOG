@@ -35,6 +35,7 @@
 #include <cstring>
 #include <fcntl.h>
 #include <iomanip>
+#include <sstream>
 #include <unistd.h>
 #include <logx/Logging.h>
 #include <sys/types.h>
@@ -166,14 +167,26 @@ boolChar(bool state) {
     return(state ? _TrueChar : _FalseChar);
 }
 
+std::string
+packetTimeString(const AnppPacket & pkt) {
+    QDateTime pktTime = QDateTime::fromTime_t(pkt.timeOfValiditySeconds())
+                        .addMSecs(pkt.timeOfValidityMicroseconds() / 1000)
+                        .toUTC();
+    return(pktTime.toString("yyyy/MM/dd hh:mm:ss.zzz").toStdString());
+}
+
+void
+doDeviceInformationPacket(const DeviceInformationPacket & diPkt) {
+    std::cout << packetTimeString(diPkt) << " Device Information - ";
+    std::cout << diPkt.deviceName();
+    std::cout << ", s/w version: " << diPkt.softwareVersion();
+    std::cout << ", h/w rev: " << diPkt.hardwareRevision();
+    std::cout << std::endl;
+}
+
 void
 doSystemStatePacket(const SystemStatePacket & ssPkt) {
-    // packet time
-    QDateTime pktTime = QDateTime::fromTime_t(ssPkt.timeOfValiditySeconds())
-                        .addMSecs(ssPkt.timeOfValidityMicroseconds() / 1000)
-                        .toUTC();
-    std::cout << pktTime.toString("yyyy/MM/dd hh:mm:ss.zzz ").toStdString();
-    std::cout << "System State - ";
+    std::cout << packetTimeString(ssPkt) << " System State - ";
 
     // initialization bits
     std::cout << "init: ";
@@ -198,12 +211,7 @@ doSystemStatePacket(const SystemStatePacket & ssPkt) {
 
 void
 doSatellitesPacket(const SatellitesPacket & pkt) {
-    // packet time
-    QDateTime pktTime = QDateTime::fromTime_t(pkt.timeOfValiditySeconds())
-                        .addMSecs(pkt.timeOfValidityMicroseconds() / 1000)
-                        .toUTC();
-    std::cout << pktTime.toString("yyyy/MM/dd hh:mm:ss.zzz ").toStdString();
-    std::cout << "Satellites - ";
+    std::cout << packetTimeString(pkt) << " Satellites - ";
 
     // satellites seen
     std::cout << "GPS: " << pkt.nGps() <<
@@ -251,18 +259,54 @@ doDetailedSatellitesPacket(const DetailedSatellitesPacket & pkt) {
 
 void
 processPacket(const AnppPacket & pkt) {
-    // Handle SystemStatePacket
-    const SystemStatePacket * ssPkt = dynamic_cast<const SystemStatePacket*>(&pkt);
-    if (ssPkt) {
-        doSystemStatePacket(*ssPkt);
+    switch (pkt.packetId()) {
+    case 3:
+    {
+        // Handle DeviceInformationPacket
+        const DeviceInformationPacket * diPkt = 
+                dynamic_cast<const DeviceInformationPacket*>(&pkt);
+        if (diPkt) {
+            doDeviceInformationPacket(*diPkt);
+        } else {
+            ELOG << "Packet with ID 3 won't cast to DeviceInformationPacket!";
+        }
+        break;
     }
-    const SatellitesPacket * sPkt = dynamic_cast<const SatellitesPacket*>(&pkt);
-    if (sPkt) {
-        doSatellitesPacket(*sPkt);
+    case 20:
+    {
+        // Handle SystemStatePacket
+        const SystemStatePacket * ssPkt = dynamic_cast<const SystemStatePacket*>(&pkt);
+        if (ssPkt) {
+            doSystemStatePacket(*ssPkt);
+        } else {
+            ELOG << "Packet with ID 20 won't cast to SystemStatePacket!";
+        }
+        break;
     }
-    const DetailedSatellitesPacket * dsPkt = 
-            dynamic_cast<const DetailedSatellitesPacket*>(&pkt);
-    if (dsPkt) {
-        doDetailedSatellitesPacket(*dsPkt);
+    case 30:
+    {
+        const SatellitesPacket * sPkt = dynamic_cast<const SatellitesPacket*>(&pkt);
+        if (sPkt) {
+            doSatellitesPacket(*sPkt);
+        } else {
+            ELOG << "Packet with ID 30 won't cast to SatellitesPacket";
+        }
+        break;
+    }
+    case 31:
+    {
+        const DetailedSatellitesPacket * dsPkt = 
+                dynamic_cast<const DetailedSatellitesPacket*>(&pkt);
+        if (dsPkt) {
+            doDetailedSatellitesPacket(*dsPkt);
+        } else {
+            ELOG << "Packet with ID 31 won't cast to DetailedSatellitesPacket";
+        }
+        break;
+    }
+    default:
+        std::cout << packetTimeString(pkt);
+        std::cout << " packet ID " << pkt.packetId();
+        std::cout << ", data length " << pkt.packetDataLen() << std::endl;
     }
 }

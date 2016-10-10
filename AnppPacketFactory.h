@@ -14,6 +14,7 @@
 #include "AnppPacket.h"
 #include "AckPacket.h"
 #include "DetailedSatellitesPacket.h"
+#include "DeviceInformationPacket.h"
 #include "EulerPacket.h"
 #include "EulerStdDevPacket.h"
 #include "GenericPacket.h"

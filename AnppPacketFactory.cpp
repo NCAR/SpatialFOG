@@ -42,6 +42,10 @@ AnppPacketFactory::_constructAnppPacket(const uint8_t * raw, uint len) const {
       pkt = new AckPacket(raw, len);
       DLOG << "Constructed an AckPacket";
       break;
+    case 3:
+      pkt = new DeviceInformationPacket(raw, len);
+      DLOG << "Constructed a DeviceInformationPacket";
+      break;
     // System State packet data -> SystemStatePacket instance
     case 20:
       pkt = new SystemStatePacket(raw, len);

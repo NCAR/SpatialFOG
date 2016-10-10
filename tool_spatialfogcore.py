@@ -12,6 +12,7 @@ sources = Split('''
     AnppPacket.cpp
     AnppPacketFactory.cpp
     DetailedSatellitesPacket.cpp
+    DeviceInformationPacket.cpp
     EulerPacket.cpp
     EulerStdDevPacket.cpp
     GenericPacket.cpp
@@ -30,6 +31,7 @@ headers = Split('''
     AnppPacket.h
     AnppPacketFactory.h
     DetailedSatellitesPacket.h
+    DeviceInformationPacket.h
     EulerPacket.h
     EulerStdDevPacket.h
     GenericPacket.h
