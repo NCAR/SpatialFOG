@@ -17,6 +17,7 @@
 #include "DeviceInformationPacket.h"
 #include "EulerPacket.h"
 #include "EulerStdDevPacket.h"
+#include "ExternalHeadingPacket.h"
 #include "GenericPacket.h"
 #include "NEDVelocityPacket.h"
 #include "RawSensorsPacket.h"

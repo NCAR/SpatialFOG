@@ -92,6 +92,10 @@ AnppPacketFactory::_constructAnppPacket(const uint8_t * raw, uint len) const {
       pkt = new EulerPacket(raw, len);
       DLOG << "Constructed an EulerPacket";
       break;
+    // External Heading packet data -> ExternalHeading instance
+    case 48:
+      pkt = new ExternalHeadingPacket(raw, len);
+      break;
     // For other IDs, create an unspecialized instance
     default:
       pkt = new GenericPacket(raw, len);

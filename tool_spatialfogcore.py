@@ -15,6 +15,7 @@ sources = Split('''
     DeviceInformationPacket.cpp
     EulerPacket.cpp
     EulerStdDevPacket.cpp
+    ExternalHeadingPacket.cpp
     GenericPacket.cpp
     NEDVelocityPacket.cpp
     RawSensorsPacket.cpp
@@ -34,6 +35,7 @@ headers = Split('''
     DeviceInformationPacket.h
     EulerPacket.h
     EulerStdDevPacket.h
+    ExternalHeadingPacket.h
     GenericPacket.h
     NEDVelocityPacket.h
     RawSensorsPacket.h
