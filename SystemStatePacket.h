@@ -104,6 +104,18 @@ public:
   /// @return the velocity up, in m/s
   float velocityUp() const { return(-1 * velocityDown()); }
 
+  /// @brief Return the acceleration along the body X axis, m s-2
+  /// @return the acceleration along the body X axis, m s-2
+  float bodyAccelerationX() const { return(_data._bodyAccelX); }
+
+  /// @brief Return the acceleration along the body Y axis, m s-2
+  /// @return the acceleration along the body Y axis, m s-2
+  float bodyAccelerationY() const { return(_data._bodyAccelY); }
+
+  /// @brief Return the acceleration along the body Z axis, m s-2
+  /// @return the acceleration along the body Z axis, m s-2
+  float bodyAccelerationZ() const { return(_data._bodyAccelZ); }
+
   /// @brief Return the roll, in degrees
   /// @return the roll, in degrees
   float roll() const { return(_RadToDeg(_data._roll)); }
@@ -115,6 +127,18 @@ public:
   /// @brief Return the heading, in degrees
   /// @return the heading, in degrees
   float heading() const { return(_RadToDeg(_data._heading)); }
+
+  /// @brief Return the angular velocity about the body X axis, deg s-1
+  /// @return the angular velocity about the body X axis, deg s-1
+  float bodyAngVelX() const { return(_RadToDeg(_data._angularVelX)); }
+
+  /// @brief Return the angular velocity about the body Y axis, deg s-1
+  /// @return the angular velocity about the body Y axis, deg s-1
+  float bodyAngVelY() const { return(_RadToDeg(_data._angularVelY)); }
+
+  /// @brief Return the angular velocity about the body Z axis, deg s-1
+  /// @return the angular velocity about the body Z axis, deg s-1
+  float bodyAngVelZ() const { return(_RadToDeg(_data._angularVelZ)); }
 
 protected:
   /// @brief ANPP packet id for this packet type
