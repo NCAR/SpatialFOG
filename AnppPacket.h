@@ -197,6 +197,12 @@ protected:
   /// @return the value in degrees equivalent to the given value in radians.
   static double _RadToDeg(double radVal) { return((radVal / M_PI) * 180.0); }
 
+  /// @brief Return the value in radians equivalent to the given value in
+  /// degrees.
+  /// @param valRad the value in degrees to be converted
+  /// @return the value in radians equivalent to the given value in degrees.
+  static double _DegToRad(double degVal) { return((degVal / 180.0) * M_PI); }
+
 private:
   /// @brief Calculate and return the ISO 1155 Longitudinal Redundancy Check
   /// (LRC) for a series of bytes.
