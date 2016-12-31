@@ -42,7 +42,7 @@ ExternalHeadingPacket::ExternalHeadingPacket(float headingDeg,
   _data._heading = _DegToRad(headingDeg);               // convert to rad
   _data._headingStdDev = _DegToRad(headingStdDevDeg);   // convert to rad
 
-  // Set the data pointer
+  // Set the AnppPacket data pointer
   _dataPtr = reinterpret_cast<uint8_t*>(&_data);
 
   // Update the header LRC and CRC to reflect the new data contents
